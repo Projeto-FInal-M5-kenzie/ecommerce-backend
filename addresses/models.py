@@ -12,4 +12,7 @@ class Address(models.Model):
     complement = models.CharField(max_length=150)
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
-    
+
+    clients = models.ManyToManyField(
+        "clients.Client", related_name="Addresses"
+    )
