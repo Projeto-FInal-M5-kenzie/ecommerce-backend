@@ -44,7 +44,7 @@ THIRD_PARTY_APPS = [
 ]
 
 MY_APPS = [
-    "client",
+    "clients",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS
@@ -132,4 +132,4 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = "client.Client"
+AUTH_USER_MODEL = "clients.Client"
