@@ -1,3 +1,4 @@
+from tkinter import N
 from django.db import models
 
 # Create your models here.
@@ -15,5 +16,13 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
     price = models.FloatField(2, null=True)
     stock = models.IntegerField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now_add=True, editable=False)
+
+
+class OrderProduct(models.Model):
+    quantity_product = models.IntegerField(null=True)
+    subtotal_price = models.FloatField(2, null=True)
+    total_price = models.FloatField(2, null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now_add=True, editable=False)
