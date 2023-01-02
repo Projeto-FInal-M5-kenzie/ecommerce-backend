@@ -8,3 +8,4 @@ class Delivery(models.Model):
     addresses = models.ForeignKey(
         "addresses.Address", on_delete=models.CASCADE, related_name="delivery"
     )
+    
