@@ -46,6 +46,7 @@ MY_APPS = [
     "sellers",
     "carts",
     "products",
+    "categories_products",
     "addresses",
     "payments",
     "deliveries",

@@ -1,15 +1,9 @@
 from django.db import models
+import uuid
 
 # Create your models here.
-class Category_product(models.Model):
-    name = models.CharField(max_length=150, null=True)
-    description = models.TextField(null=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now_add=True, editable=False)
-
-
 class Product(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     name_product = models.CharField(max_length=150, null=True)
     description = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
@@ -18,10 +12,17 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now_add=True, editable=False)
 
+    sellers = models.ManyToManyField("sellers.Seller", related_name="products")
+    category = models.ForeignKey("categories_products", on_delete=models.CASCADE, related_name="products")
+
 
 class OrderProduct(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     quantity_product = models.IntegerField(null=True)
     subtotal_price = models.FloatField(2, null=True)
     total_price = models.FloatField(2, null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now_add=True, editable=False)
+
+    clients = models.ForeignKey("clients.Client", on_delete=models.CASCADE, related_name="orders")
+    products = models.ForeignKey("products.Product", on_delete=models.CASCADE, related_name="orders")
