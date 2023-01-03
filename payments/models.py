@@ -21,7 +21,7 @@ class Payment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     client = models.ForeignKey(
-        "clients.Client",
+        "users.User",
         on_delete=models.CASCADE,
         related_name="payments",
     )

@@ -13,6 +13,6 @@ class Address(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
-    clients = models.ManyToManyField(
-        "clients.Client", related_name="Addresses"
+    users = models.ManyToManyField(
+        "users.User", related_name="Addresses"
     )
