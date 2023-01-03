@@ -8,7 +8,7 @@ class Cart(models.Model):
     frete = models.DecimalField(max_digits=8, decimal_places=2)
     total_price = models.DecimalField(max_digits=8, decimal_places=2)
 
-    client = models.ForeignKey("clients.Client", on_delete=models.CASCADE, related_name="carts")
+    client = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="carts")
     delivery = models.ForeignKey("deliveries.Delivery", on_delete=models.CASCADE, related_name="carts")
     payment = models.ForeignKey("payments.Payment", on_delete=models.CASCADE, related_name="carts")
     
