@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+
 from .models import User
 
 
@@ -17,7 +19,25 @@ class UserSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        extra_kwargs = {"password": {"write_only": True}}
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "email": {
+                "validators": [
+                    UniqueValidator(
+                        queryset=User.objects.all(),
+                        message="Email already exists.",
+                    )
+                ]
+            },
+            "cpf": {
+                "validators": [
+                    UniqueValidator(
+                        queryset=User.objects.all(),
+                        message="CPF already exists.",
+                    )
+                ]
+            },
+        }
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
@@ -30,3 +50,5 @@ class UserSerializer(serializers.ModelSerializer):
                 setattr(instance, key, value)
 
         instance.save()
+
+        return instance
