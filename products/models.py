@@ -12,8 +12,12 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now_add=True, editable=False)
 
-    sellers = models.ManyToManyField("sellers.Seller", related_name="products")
-    category = models.ForeignKey("categories_products", on_delete=models.CASCADE, related_name="products")
+    sellers = models.ManyToManyField(
+        "sellers.Seller", related_name="products"
+    )
+    category = models.ForeignKey(
+        "categories_products.Category_product", on_delete=models.CASCADE, related_name="products"
+    )
 
 
 class OrderProduct(models.Model):
@@ -24,5 +28,9 @@ class OrderProduct(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now_add=True, editable=False)
 
-    clients = models.ForeignKey("clients.Client", on_delete=models.CASCADE, related_name="orders")
-    products = models.ForeignKey("products.Product", on_delete=models.CASCADE, related_name="orders")
+    clients = models.ForeignKey(
+        "users.User", on_delete=models.CASCADE, related_name="orders"
+    )
+    products = models.ForeignKey(
+        "products.Product", on_delete=models.CASCADE, related_name="orders"
+    )
