@@ -13,13 +13,12 @@ class Product(models.Model):
     stock = models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now_add=True, editable=False)
-
-    sellers = models.ManyToManyField(
-        "sellers.Seller", related_name="products"
-    )
+    quantity = models.IntegerField(default=1)
+    sellers = models.ManyToManyField("sellers.Seller", related_name="products")
     category = models.ForeignKey(
-        "categories_products.Category_product", on_delete=models.CASCADE,
-        related_name="products"
+        "categories_products.Category_product",
+        on_delete=models.CASCADE,
+        related_name="products",
     )
 
 
