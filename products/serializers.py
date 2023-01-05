@@ -8,9 +8,9 @@ class ProductSerializer(serializers.ModelSerializer):
     stock = serializers.SerializerMethodField(read_only=True)
 
     def create(self, validated_data: dict) -> Product:
+
         category_id = validated_data.pop("category")
-        # categoid = validated_data.pop("category")
-        # dict_a = dict(id=category_id)
+
         category_obj = Category_product.objects.get(id=category_id)
 
         name_product = validated_data.pop("name_product")

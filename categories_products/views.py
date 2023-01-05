@@ -6,7 +6,8 @@ from .serializers import CategorySerializer
 from .models import Category_product
 from rest_framework.views import APIView, Request, Response, status
 from django.core.exceptions import BadRequest
-
+from products.models import Product
+import ipdb
 class CategoryView(ListCreateAPIView):
 
     authentication_classes = [JWTAuthentication]
@@ -30,8 +31,11 @@ class CategoryDetailView(RetrieveUpdateDestroyAPIView):
         category_id = self.kwargs["category_id"]
 
         category_obj = get_object_or_404(Category_product, pk=category_id)
-        
+        products_list = Product.objects.filter(category=category_obj)
+        ipdb.set_trace()
         return category_obj
+            # products=products_list
+        # )
 
 
 class RestoreCategoryView(APIView):
