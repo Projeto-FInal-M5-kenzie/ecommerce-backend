@@ -10,5 +10,5 @@ class Cart(models.Model):
 
     client = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="carts")
     delivery = models.ForeignKey("deliveries.Delivery", on_delete=models.CASCADE, related_name="carts")
-    payment = models.ForeignKey("payments.Payment", on_delete=models.CASCADE, related_name="carts")
-    
+    payment = models.ForeignKey("payments.Payment", on_delete=models.CASCADE, related_name="carts", default="")
+    product = models.ForeignKey("products.OrderProduct", on_delete=models.CASCADE, related_name="carts")
