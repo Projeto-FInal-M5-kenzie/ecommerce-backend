@@ -2,6 +2,8 @@ from django.db import models
 import uuid
 
 # Create your models here.
+
+
 class Product(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     name_product = models.CharField(max_length=150, null=True)
@@ -16,7 +18,8 @@ class Product(models.Model):
         "sellers.Seller", related_name="products"
     )
     category = models.ForeignKey(
-        "categories_products.Category_product", on_delete=models.CASCADE, related_name="products"
+        "categories_products.Category_product", on_delete=models.CASCADE,
+        related_name="products"
     )
 
 
@@ -34,3 +37,7 @@ class OrderProduct(models.Model):
     products = models.ForeignKey(
         "products.Product", on_delete=models.CASCADE, related_name="orders"
     )
+
+    cart = models.ForeignKey(
+        "carts.Cart", on_delete=models.CASCADE,
+        related_name="products")
