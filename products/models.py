@@ -11,7 +11,7 @@ class Product(models.Model):
     stock = models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now_add=True, editable=False)
-
+    quantity = models.IntegerField(default=1)
     sellers = models.ManyToManyField("sellers.Seller", related_name="products")
     category = models.ForeignKey(
         "categories_products.Category_product",
