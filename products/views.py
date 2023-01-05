@@ -7,8 +7,9 @@ from .serializers import OrderProductSerializer, ProductSerializer
 import ipdb
 from rest_framework.views import APIView, Request, Response, status
 
+
 class ProductView(generics.ListCreateAPIView):
-    
+
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
@@ -17,13 +18,12 @@ class ProductView(generics.ListCreateAPIView):
 
 
 class ProductCategoryView(APIView):
-
     def get(self, req: Request, category_id: str) -> Response:
 
         products_list = Product.objects.filter(category=category_id)
 
         serializer = ProductSerializer(products_list, many=True)
-        
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
