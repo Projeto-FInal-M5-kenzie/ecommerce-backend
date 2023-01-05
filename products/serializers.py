@@ -6,11 +6,10 @@ import ipdb
 class ProductSerializer(serializers.ModelSerializer):
   
     stock = serializers.SerializerMethodField(read_only=True)
-
+    
     def create(self, validated_data: dict) -> Product:
-
+        product_qtd = validated_data.pop("quantity")
         category_id = validated_data.pop("category")
-
         category_obj = Category_product.objects.get(id=category_id)
 
         name_product = validated_data.pop("name_product")
@@ -22,27 +21,42 @@ class ProductSerializer(serializers.ModelSerializer):
 
             if len(product_obj) > 0:
              
-                stock += 1
-               
-                return Product.objects.create(
-                    **validated_data,
-                    category=category_obj,
-                    stock=stock,
-                    name_product=name_product
+                stock += product_qtd
+                product_list = [
+                    Product(
+                        **validated_data,
+                        category=category_obj,
+                        stock=stock,
+                        name_product=name_product
+                    ) for _ in range(product_qtd)
+                ]
+
+                Product.objects.bulk_create(
+                    product_list
                 )
+
+                return product_list[0]
 
             raise Product.DoesNotExist
 
         except Product.DoesNotExist:
           
-            stock += 1
+            stock += product_qtd
           
-            return Product.objects.create(
-                **validated_data,
-                category=category_obj,
-                stock=stock,
-                name_product=name_product
+            product_list = [
+                Product(
+                    **validated_data,
+                    category=category_obj,
+                    stock=stock,
+                    name_product=name_product
+                ) for _ in range(product_qtd)
+            ]
+            
+            Product.objects.bulk_create(
+                product_list
             )
+
+            return product_list[0]
 
 
     def get_stock(self, obj):
@@ -70,11 +84,17 @@ class ProductSerializer(serializers.ModelSerializer):
             "stock",
             "created_at",
             "category",
+            "quantity"
         ]
+
+        extra_kwargs = {
+            "quantity":{"write_only": True}
+        }
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
-   
+    clients = serializers.SerializerMethodField(read_only=True)
+    products = serializers.SerializerMethodField(read_only=True)
     class Meta:
 
         model = OrderProduct
@@ -89,7 +109,14 @@ class OrderProductSerializer(serializers.ModelSerializer):
             "clients",
             "products",
         ]
+    
+    def get_clients(self, obj):
+        return obj.user.username
+
+    def get_products(self, obj):
+        return obj.products
 
     def create(self, validated_data: dict) -> OrderProduct:
-
+        ipdb.set_trace()
+        # product = validated_data.pop("products")
         return OrderProduct.objects.create(**validated_data)

@@ -35,11 +35,12 @@ class OrderProductView(generics.ListCreateAPIView):
     serializer_class = OrderProductSerializer
 
     def perform_create(self, serializer):
+        ipdb.set_trace()
 
         product_id = self.kwargs["product_id"]
 
-        product_obj = get_object_or_404(OrderProduct, pk=product_id)
+        product_obj = get_object_or_404(Product, pk=product_id)
 
         serializer.save(
-            clients=self.request.user, product=product_obj, **self.request.data
+            clients=self.request.user, products=product_obj, **self.request.data
         )
