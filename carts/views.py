@@ -6,6 +6,8 @@ from .models import Cart
 from .serializers import CartSerializer
 
 # Create your views here.
+
+
 class CartView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
