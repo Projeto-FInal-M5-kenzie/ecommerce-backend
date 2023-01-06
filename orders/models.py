@@ -14,5 +14,9 @@ class Order(models.Model):
     )
 
     delivery = models.ForeignKey(
-        "deliveries.Delivery", on_delete=models.CASCADE, related_name="orders"
+        "deliveries.Delivery",
+        on_delete=models.CASCADE,
+        related_name="orders",
+        null=True,
+        blank=True,
     )

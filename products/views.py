@@ -3,9 +3,8 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import OrderProduct, Product
 from django.shortcuts import get_object_or_404
-from .serializers import OrderProductSerializer, ProductSerializer
+from .serializers import ProductSerializer, OrderProductSerializer
 from rest_framework.permissions import IsAuthenticated
-import ipdb
 from rest_framework.views import APIView, Request, Response, status
 
 
@@ -41,7 +40,7 @@ class OrderProductView(generics.ListCreateAPIView):
 
         product_obj = get_object_or_404(Product, pk=product_id)
         serializer.save(
-            clients=self.request.user,
-            products=product_obj,
+            user=self.request.user,
+            product=product_obj,
             **self.request.data,
         )

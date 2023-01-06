@@ -32,6 +32,7 @@ class Product(models.Model):
 
 class OrderProduct(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    quantity_product = models.IntegerField(null=True)
     product = models.ForeignKey(
         "products.Product",
         on_delete=models.CASCADE,
@@ -44,27 +45,3 @@ class OrderProduct(models.Model):
         null=True,
         blank=True,
     )
-
-
-# class OrderProduct(models.Model):
-#     id = models.UUIDField(
-#         default=uuid.uuid4,
-#         primary_key=True,
-#         editable=False,
-#     )
-#     quantity_product = models.IntegerField(null=True)
-#     subtotal_price = models.FloatField(2, null=True)
-#     total_price = models.FloatField(2, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True, editable=False)
-#     updated_at = models.DateTimeField(auto_now_add=True, editable=False)
-
-#     clients = models.ForeignKey(
-#         "users.User", on_delete=models.CASCADE, related_name="orders"
-#     )
-#     products = models.ForeignKey(
-#         "products.Product", on_delete=models.CASCADE, related_name="orders"
-#     )
-
-#     cart = models.ForeignKey(
-#         "carts.Cart", on_delete=models.CASCADE, related_name="products"
-#     )

@@ -1,8 +1,7 @@
 from rest_framework import serializers
 from .models import OrderProduct, Product
+from orders.models import Order
 from categories_products.models import Category_product
-import ipdb
-from users.serializers import UserSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -98,9 +97,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
-    clients = UserSerializer()
-    products = ProductSerializer(many=True)
-
     class Meta:
 
         model = OrderProduct
@@ -108,21 +104,12 @@ class OrderProductSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "quantity_product",
-            "subtotal_price",
-            "total_price",
-            "created_at",
-            "updated_at",
-            "clients",
-            "products",
+            "order",
+            "product",
         ]
 
-    def get_clients(self, obj):
-        return obj.user.username
-
-    def get_products(self, obj):
-        return obj.products
-
     def create(self, validated_data: dict) -> OrderProduct:
-        # ipdb.set_trace()
-        # product = validated_data.pop("products")
-        return OrderProduct.objects.create(**validated_data)
+
+        user = validated_data.pop("user")
+        order_obj = Order.objects.create(user=user)
+        return OrderProduct.objects.create(**validated_data, order=order_obj)
