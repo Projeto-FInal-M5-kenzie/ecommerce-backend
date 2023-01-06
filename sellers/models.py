@@ -7,7 +7,6 @@ class Seller(models.Model):
     company_name = models.CharField(max_length=150, unique=True)
     cnpj = models.CharField(max_length=14, unique=True)
     is_active = models.BooleanField(default=True)
-    is_seller = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
