@@ -5,6 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from users.models import User
+from .permissions import IsSellerAuthorization
 
 # Create your views here.
 
@@ -23,6 +24,9 @@ class AddressViewUser(ListCreateAPIView):
         return Address.objects.filter(users__id=self.request.user.id)
 
 class AddressViewSeller(ListCreateAPIView):
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsSellerAuthorization]
 
     queryset = Address.objects.filter()
     serializer_class = AddressSerializer
