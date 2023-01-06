@@ -16,12 +16,9 @@ class Product(models.Model):
     quantity = models.IntegerField(default=1)
     sellers = models.ManyToManyField("sellers.Seller", related_name="products")
     category = models.ForeignKey(
-
-
         "categories_products.Category_product",
         on_delete=models.CASCADE,
         related_name="products",
-
     )
 
 
@@ -41,5 +38,8 @@ class OrderProduct(models.Model):
     )
 
     cart = models.ForeignKey(
-        "carts.Cart", on_delete=models.CASCADE,
-        related_name="products")
+        "carts.Cart",
+        on_delete=models.CASCADE,
+        related_name="products",
+        null=True,
+    )
