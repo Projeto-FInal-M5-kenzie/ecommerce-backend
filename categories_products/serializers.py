@@ -30,6 +30,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
         model = Category_product
         fields = [
+
             "id",
             "name",
             "description",
@@ -39,6 +40,7 @@ class CategorySerializer(serializers.ModelSerializer):
             "deleted_at",
             "is_deleted",
             "products",
+
         ]
 
         extra_kwargs = {

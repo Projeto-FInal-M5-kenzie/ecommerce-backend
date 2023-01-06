@@ -12,3 +12,4 @@ class User(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 
     payment = models.OneToOneField("payments.Payment", on_delete=models.CASCADE)
+
