@@ -16,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
             "phone",
             "is_active",
             "is_superuser",
+            "is_seller",
             "created_at",
             "updated_at",
         ]
@@ -38,8 +39,15 @@ class UserSerializer(serializers.ModelSerializer):
                 ]
             },
         }
+        read_only_fields = ["is_superuser", "is_active"]
 
     def create(self, validated_data):
+        USERS_ADM = ("lucas@adm.com", "geovane@adm.com", "gutemberg@adm.com")
+        validated_data["is_seller"] = False
+
+        if validated_data["email"] in USERS_ADM:
+            return User.objects.create_superuser(**validated_data)
+
         return User.objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):

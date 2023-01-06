@@ -5,13 +5,16 @@ from .models import Seller
 from users.serializers import UserSerializer
 
 
-class SellerSerializer(serializers.Serializer):
-    user = UserSerializer(read_only=True)
+class SellerSerializer(serializers.ModelSerializer):
+    # client = UserSerializer(read_only=True)
 
     class Meta:
         model = Seller
         fields = [
             "id",
+            "username",
+            "email",
+            "password",
             "company_name",
             "cnpj",
             "is_active",
@@ -38,7 +41,7 @@ class SellerSerializer(serializers.Serializer):
         }
 
     def create(self, validated_data) -> Seller:
-        return Seller.objects.create(**validated_data)
+        return Seller.objects.create_superuser(**validated_data)
 
     def update(self, instance: Seller, validated_data) -> Seller:
         for key, value in validated_data.items():

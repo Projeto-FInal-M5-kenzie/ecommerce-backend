@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="Address",
+            name="Cart",
             fields=[
                 (
                     "id",
@@ -23,14 +23,9 @@ class Migration(migrations.Migration):
                         serialize=False,
                     ),
                 ),
-                ("city", models.CharField(max_length=150)),
-                ("state", models.CharField(max_length=150)),
-                ("zip_code", models.IntegerField()),
-                ("district", models.CharField(max_length=150)),
-                ("number", models.IntegerField()),
-                ("complement", models.CharField(max_length=150)),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                ("update_at", models.DateTimeField(auto_now=True)),
+                ("subtotal_price", models.DecimalField(decimal_places=2, max_digits=8)),
+                ("frete", models.DecimalField(decimal_places=2, max_digits=8)),
+                ("total_price", models.DecimalField(decimal_places=2, max_digits=8)),
             ],
         ),
     ]
