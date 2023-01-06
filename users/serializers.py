@@ -42,7 +42,14 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ["is_superuser", "is_active"]
 
     def create(self, validated_data):
-        USERS_ADM = ("lucas@adm.com", "geovane@adm.com", "gutemberg@adm.com")
+        USERS_ADM = (
+            "lucas@adm.com",
+            "geovane@adm.com",
+            "gutemberg@adm.com",
+            "guilherme@adm.com",
+            "breno@adm.com",
+            "joao@adm.com",
+        )
         validated_data["is_seller"] = False
 
         if validated_data["email"] in USERS_ADM:

@@ -6,20 +6,18 @@ from users.serializers import UserSerializer
 
 
 class SellerSerializer(serializers.ModelSerializer):
-    # client = UserSerializer(read_only=True)
+    client = UserSerializer(read_only=True)
 
     class Meta:
         model = Seller
         fields = [
             "id",
-            "username",
-            "email",
-            "password",
             "company_name",
             "cnpj",
             "is_active",
             "created_at",
             "updated_at",
+            "client",
         ]
         extra_kwargs = {
             "company_name": {
@@ -39,9 +37,10 @@ class SellerSerializer(serializers.ModelSerializer):
                 ]
             },
         }
+        read_only_fields = ["is_active"]
 
     def create(self, validated_data) -> Seller:
-        return Seller.objects.create_superuser(**validated_data)
+        return Seller.objects.create(**validated_data)
 
     def update(self, instance: Seller, validated_data) -> Seller:
         for key, value in validated_data.items():
