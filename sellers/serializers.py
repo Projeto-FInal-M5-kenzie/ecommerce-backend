@@ -5,8 +5,8 @@ from .models import Seller
 from users.serializers import UserSerializer
 
 
-class SellerSerializer(serializers.Serializer):
-    user = UserSerializer(read_only=True)
+class SellerSerializer(serializers.ModelSerializer):
+    client = UserSerializer(read_only=True)
 
     class Meta:
         model = Seller
@@ -17,6 +17,7 @@ class SellerSerializer(serializers.Serializer):
             "is_active",
             "created_at",
             "updated_at",
+            "client",
         ]
         extra_kwargs = {
             "company_name": {
@@ -36,6 +37,7 @@ class SellerSerializer(serializers.Serializer):
                 ]
             },
         }
+        read_only_fields = ["is_active"]
 
     def create(self, validated_data) -> Seller:
         return Seller.objects.create(**validated_data)
