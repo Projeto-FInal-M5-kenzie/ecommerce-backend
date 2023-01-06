@@ -1,12 +1,15 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import Category_product
+from products.serializers import ProductSerializer
 import ipdb
 
 # from django_softdelete.models import
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    products = ProductSerializer(required=False, many=True)
+
     def create(self, validated_data: dict) -> Category_product:
 
         return Category_product.objects.create(**validated_data)
