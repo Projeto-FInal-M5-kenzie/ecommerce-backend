@@ -6,6 +6,8 @@ from django.shortcuts import get_object_or_404
 from .serializers import ProductSerializer, OrderProductSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Request, Response, status
+from django.shortcuts import get_object_or_404
+import ipdb
 
 
 class ProductView(generics.ListCreateAPIView):
@@ -17,14 +19,25 @@ class ProductView(generics.ListCreateAPIView):
         serializer.save(**self.request.data)
 
 
-class ProductCategoryView(APIView):
-    def get(self, req: Request, category_id: str) -> Response:
+class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
-        products_list = Product.objects.filter(category=category_id)
+    def get_object(self):
 
-        serializer = ProductSerializer(products_list, many=True)
+        product_id = self.kwargs["product_id"]
+        product_obj = get_object_or_404(Product, pk=product_id)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return product_obj
+
+
+class ProductNameListView(generics.ListAPIView):
+
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+
+        return Product.objects.filter(name_product=self.kwargs["product_name"])
 
 
 class OrderProductView(generics.ListCreateAPIView):
@@ -39,8 +52,23 @@ class OrderProductView(generics.ListCreateAPIView):
         product_id = self.kwargs["product_id"]
 
         product_obj = get_object_or_404(Product, pk=product_id)
+        ipdb.set_trace()
         serializer.save(
             user=self.request.user,
             product=product_obj,
             **self.request.data,
         )
+
+
+class OrderProductDetailView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = OrderProduct.objects.all()
+    serializer_class = OrderProductSerializer
+
+    def get_object(self):
+
+        order_product_id = self.kwargs["order_product_id"]
+        order_product_obj = get_object_or_404(OrderProduct, pk=order_product_id)
+
+        return order_product_obj

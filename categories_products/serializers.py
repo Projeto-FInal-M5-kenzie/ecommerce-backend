@@ -8,8 +8,6 @@ import ipdb
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    products = ProductSerializer(required=False, many=True)
-
     def create(self, validated_data: dict) -> Category_product:
 
         return Category_product.objects.create(**validated_data)
@@ -50,4 +48,5 @@ class CategorySerializer(serializers.ModelSerializer):
                     )
                 ]
             },
+            "products": {"read_only": True},
         }

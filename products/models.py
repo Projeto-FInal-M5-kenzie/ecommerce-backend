@@ -10,10 +10,10 @@ class Product(models.Model):
     description = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
     price = models.FloatField(2, null=True)
-    stock = models.IntegerField(null=True)
+    stock = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now_add=True, editable=False)
-    quantity = models.IntegerField(default=1)
+    # quantity = models.IntegerField(null=True, blank=True,)
 
     sellers = models.ManyToManyField("sellers.Seller", related_name="products")
 
@@ -45,4 +45,3 @@ class OrderProduct(models.Model):
         null=True,
         blank=True,
     )
-

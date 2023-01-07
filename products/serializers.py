@@ -2,13 +2,15 @@ from rest_framework import serializers
 from .models import OrderProduct, Product
 from orders.models import Order
 from categories_products.models import Category_product
+import ipdb
 
 
 class ProductSerializer(serializers.ModelSerializer):
-
+    quantity = serializers.IntegerField(default=1, write_only=True)
     stock = serializers.SerializerMethodField(read_only=True)
 
     def create(self, validated_data: dict) -> Product:
+        product_qtd = 1
         product_qtd = validated_data.pop("quantity")
         category_id = validated_data.pop("category")
         category_obj = Category_product.objects.get(id=category_id)
@@ -23,11 +25,12 @@ class ProductSerializer(serializers.ModelSerializer):
                     category=category_obj,
                 )
             )
-            product_obj = Product.objects.filter(
+
+            product_obj_list = Product.objects.filter(
                 name_product=name_product, category=category_obj
             )
 
-            if len(product_obj) > 0:
+            if len(product_obj_list) > 0:
 
                 stock += product_qtd
                 product_list = [
@@ -61,7 +64,6 @@ class ProductSerializer(serializers.ModelSerializer):
             ]
 
             Product.objects.bulk_create(product_list)
-
             return product_list[0]
 
     def get_stock(self, obj):
@@ -108,7 +110,10 @@ class OrderProductSerializer(serializers.ModelSerializer):
             "product",
         ]
 
+        depth = 1
+
     def create(self, validated_data: dict) -> OrderProduct:
+        ipdb.set_trace()
 
         user = validated_data.pop("user")
         order_obj = Order.objects.create(user=user)

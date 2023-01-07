@@ -1,11 +1,8 @@
 from rest_framework import serializers
 from .models import Order
-from deliveries.serializers import DeliverySerializer
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    delivery = DeliverySerializer(required=False)
-
     class Meta:
 
         model = Order
