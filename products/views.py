@@ -7,7 +7,6 @@ from .serializers import ProductSerializer, OrderProductSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Request, Response, status
 from django.shortcuts import get_object_or_404
-import ipdb
 
 
 class ProductView(generics.ListCreateAPIView):
@@ -17,6 +16,14 @@ class ProductView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(**self.request.data)
+
+    def get_queryset(self):
+        route_parameter = self.request.GET.get("product_name")
+        if route_parameter:
+
+            return Product.objects.filter(product_name__icontains=route_parameter)
+
+        return super().get_queryset()
 
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -31,15 +38,6 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
         return product_obj
 
 
-class ProductNameListView(generics.ListAPIView):
-
-    serializer_class = ProductSerializer
-
-    def get_queryset(self):
-
-        return Product.objects.filter(name_product=self.kwargs["product_name"])
-
-
 class OrderProductView(generics.ListCreateAPIView):
 
     authentication_classes = [JWTAuthentication]
@@ -52,7 +50,6 @@ class OrderProductView(generics.ListCreateAPIView):
         product_id = self.kwargs["product_id"]
 
         product_obj = get_object_or_404(Product, pk=product_id)
-        ipdb.set_trace()
         serializer.save(
             user=self.request.user,
             product=product_obj,

@@ -19,20 +19,27 @@ class ProductSerializer(serializers.ModelSerializer):
 
         try:
 
-            stock = len(
-                Product.objects.filter(
-                    name_product=name_product,
-                    category=category_obj,
-                )
-            )
-
+            
             product_obj_list = Product.objects.filter(
                 name_product=name_product, category=category_obj
             )
 
-            if len(product_obj_list) > 0:
+            stock = len(product_obj_list)
+            
+            if stock > 0:
+                product_bulk_update_list = []
 
                 stock += product_qtd
+
+                for product in product_obj_list:
+                    product.stock = stock
+                    product_bulk_update_list.append(product)
+                
+                Product.objects.bulk_update(product_bulk_update_list, ['stock'])
+                # Product.objects.filter(
+                #     name_product=name_product, category=category_obj
+                # ).update(stock=stock)
+
                 product_list = [
                     Product(
                         **validated_data,
@@ -45,19 +52,23 @@ class ProductSerializer(serializers.ModelSerializer):
 
                 Product.objects.bulk_create(product_list)
 
+                # Product.objects.bulk_update(
+                #     [
+                #         product.update()
+                #         for product in product_obj_list 
+                #     ],
+                #     ["stock"],
+                # )
                 return product_list[0]
-
             raise Product.DoesNotExist
 
         except Product.DoesNotExist:
-
-            stock += product_qtd
 
             product_list = [
                 Product(
                     **validated_data,
                     category=category_obj,
-                    stock=stock,
+                    stock=product_qtd,
                     name_product=name_product
                 )
                 for _ in range(product_qtd)
