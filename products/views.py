@@ -5,7 +5,6 @@ from .models import OrderProduct, Product
 from django.shortcuts import get_object_or_404
 from .serializers import ProductSerializer, OrderProductSerializer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView, Request, Response, status
 from django.shortcuts import get_object_or_404
 
 
