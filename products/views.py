@@ -56,7 +56,6 @@ class OrderProductView(generics.ListCreateAPIView):
             **self.request.data,
         )
 
-
 class OrderProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]

@@ -36,9 +36,6 @@ class ProductSerializer(serializers.ModelSerializer):
                     product_bulk_update_list.append(product)
                 
                 Product.objects.bulk_update(product_bulk_update_list, ['stock'])
-                # Product.objects.filter(
-                #     name_product=name_product, category=category_obj
-                # ).update(stock=stock)
 
                 product_list = [
                     Product(
@@ -75,6 +72,7 @@ class ProductSerializer(serializers.ModelSerializer):
             ]
 
             Product.objects.bulk_create(product_list)
+
             return product_list[0]
 
     def get_stock(self, obj):
@@ -88,7 +86,7 @@ class ProductSerializer(serializers.ModelSerializer):
             )
         )
 
-        return dict(quantity=qtd, product=obj.name_product)
+        return dict(quantity=qtd, product=obj.name_product,)
 
     class Meta:
 
@@ -124,8 +122,14 @@ class OrderProductSerializer(serializers.ModelSerializer):
         depth = 1
 
     def create(self, validated_data: dict) -> OrderProduct:
-        ipdb.set_trace()
-
+        product = validated_data.pop("product")
         user = validated_data.pop("user")
-        order_obj = Order.objects.create(user=user)
-        return OrderProduct.objects.create(**validated_data, order=order_obj)
+        order_product = OrderProduct.objects.create(**validated_data, product=product)
+        order_obj = Order.objects.get_or_create(user=user)[0]
+        
+        # order_obj.products.add(product)   
+        order_obj.order_products.add(order_product)
+        # ipdb.set_trace()
+
+        return order_product
+        OrderProduct.objects.create(**validated_data, order=order_obj,product=product)

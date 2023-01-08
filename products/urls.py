@@ -12,10 +12,6 @@ urlpatterns = [
         views.ProductDetailView.as_view(),
     ),
     path(
-        "product/<str:product_name>/",
-        views.ProductNameListView.as_view(),
-    ),
-    path(
         "product/<uuid:product_id>/order_product/",
         views.OrderProductView.as_view(),
     ),
