@@ -3,10 +3,7 @@ from .models import Order
 import ipdb
 
 class OrderSerializer(serializers.ModelSerializer):
-    # products = serializers.SerializerMethodField()
 
-    # def get_products(self, obj):
-    #     ipdb.set_trace()
     class Meta:
 
         model = Order

@@ -127,9 +127,6 @@ class OrderProductSerializer(serializers.ModelSerializer):
         order_product = OrderProduct.objects.create(**validated_data, product=product)
         order_obj = Order.objects.get_or_create(user=user)[0]
         
-        # order_obj.products.add(product)   
         order_obj.order_products.add(order_product)
-        # ipdb.set_trace()
 
         return order_product
-        OrderProduct.objects.create(**validated_data, order=order_obj,product=product)
