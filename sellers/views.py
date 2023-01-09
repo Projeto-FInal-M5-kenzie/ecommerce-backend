@@ -1,7 +1,7 @@
 from .models import Seller
 from .serializers import SellerSerializer
 
-from users.permissions import IsSellerAuthorization
+from users.permissions import IsSellerAuthorization, IsOwnerAuthentication
 
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -21,7 +21,7 @@ class RegisterSellerView(generics.ListCreateAPIView):
 
 class SellerDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
-    # permission_classes = [IsOwnerAuthentication]
+    permission_classes = [IsOwnerAuthentication]
 
     serializer_class = SellerSerializer
     queryset = Seller.objects.all()
