@@ -2,10 +2,12 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import OrderProduct, Product
+from addresses.models import Address
+from categories_products.models import Category_product
 from .serializers import ProductSerializer, OrderProductSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-
+import ipdb
 
 class ProductView(generics.ListCreateAPIView):
 
@@ -44,15 +46,13 @@ class OrderProductView(generics.ListCreateAPIView):
     serializer_class = OrderProductSerializer
 
     def perform_create(self, serializer):
-
-        # product_id = self.kwargs["product_id"]
-
-        # product_obj = get_object_or_404(Product, pk=product_id)
+        get_object_or_404(Address, id=self.request.data["address"])
+        get_object_or_404(Category_product, name=self.request.data["category"])
         serializer.save(
             user=self.request.user,
-            # product=product_obj,
             **self.request.data,
         )
+    
 
 class OrderProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]

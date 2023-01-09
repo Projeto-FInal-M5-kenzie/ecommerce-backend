@@ -3,7 +3,7 @@ from .models import Order
 import ipdb
 
 class OrderSerializer(serializers.ModelSerializer):
-
+    
     class Meta:
 
         model = Order
@@ -13,6 +13,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             # "user",
+            "address",
             "products",
             "order_products"
             # "delivery",
