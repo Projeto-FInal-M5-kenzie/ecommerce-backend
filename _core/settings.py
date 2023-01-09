@@ -45,12 +45,10 @@ THIRD_PARTY_APPS = ["rest_framework"]
 MY_APPS = [
     "users",
     "sellers",
-    "carts",
     "products",
     "categories_products",
     "addresses",
     "payments",
-    "deliveries",
     "orders",
 ]
 
