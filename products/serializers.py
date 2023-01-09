@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from .models import OrderProduct, Product
 from orders.models import Order
+from addresses.models import Address
+from orders.serializers import OrderSerializer
 from categories_products.models import Category_product
+from django.shortcuts import get_object_or_404
 import ipdb
 
 
@@ -48,13 +51,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
                 Product.objects.bulk_create(product_list)
 
-                # Product.objects.bulk_update(
-                #     [
-                #         product.update()
-                #         for product in product_obj_list
-                #     ],
-                #     ["stock"],
-                # )
                 return product_list[0]
             raise Product.DoesNotExist
 
@@ -110,6 +106,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
+    address = ()
     class Meta:
 
         model = OrderProduct
@@ -128,14 +125,24 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
         name_product = validated_data.pop("name_product")
         product_qtd = validated_data.pop("quantity_product")
+        address = Address.objects.get(id=validated_data.pop("address"))
         user = validated_data.pop("user")
-        order_obj = Order.objects.get_or_create(user=user)[0]
+        ipdb.set_trace()
+        # address = get_object_or_404(Address, id=address_id)
+   
+        order_obj = Order.objects.filter(user__id=user.id).first()
+
+        if not order_obj:
+            order_obj = Order.objects.create(user=user, address=address)
+
         count = 0
 
         products_list = Product.objects.filter(
             name_product=name_product, category=category_obj
         )
+        
         order_product = validated_data
+
         for product in products_list:
             count += 1
             if count > product_qtd:

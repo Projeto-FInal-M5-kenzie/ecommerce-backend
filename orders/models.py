@@ -12,3 +12,11 @@ class Order(models.Model):
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="orders"
     )
+
+    address = models.ForeignKey(
+        "addresses.Address",
+        on_delete=models.CASCADE,
+        related_name="orders",
+        null=True,
+        blank=True,
+    )
