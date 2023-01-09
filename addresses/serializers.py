@@ -1,31 +1,24 @@
 from rest_framework import serializers
+
 from .models import Address
+from sellers.serializers import SellerSerializer
+from users.serializers import UserSerializer
+
 import ipdb
 
 
-class AddressSerializer(serializers.ModelSerializer):
+class AddressSellerSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
-        user = validated_data.pop("users")
+        seller = validated_data.pop("seller")
 
         address = Address.objects.get_or_create(**validated_data)[0]
 
-        address.users.add(user)
+        address.seller = seller
 
         return address
 
-    def create(self, validated_data):
-        user = validated_data.pop("users")
-        seller = validated_data.pop("sellers")
+    seller = SellerSerializer(read_only=True)
 
-        address = Address.objects.get_or_create(**validated_data)[0]
-
-        if user:
-            address.users.add(user)
-        elif seller:
-            address.sellers.add(seller)
-
-        return address
-    
     class Meta:
 
         model = Address
@@ -40,6 +33,42 @@ class AddressSerializer(serializers.ModelSerializer):
             "complement",
             "created_at",
             "update_at",
+            "seller",
+        ]
+
+        read_only_fields = ["created_at", "update_at"]
+
+
+class AddressUserSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        user = validated_data.pop("users")
+
+        address = Address.objects.get_or_create(**validated_data)[0]
+
+        address.users.add(user)
+
+        request = self.context["request"].get_full_path()
+        print(request)
+
+        return address
+
+    users = UserSerializer(read_only=True, many=True)
+
+    class Meta:
+
+        model = Address
+
+        fields = [
+            "id",
+            "city",
+            "state",
+            "zip_code",
+            "district",
+            "number",
+            "complement",
+            "created_at",
+            "update_at",
+            "users",
         ]
 
         read_only_fields = ["created_at", "update_at"]
