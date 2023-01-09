@@ -32,7 +32,7 @@ class CategoryDetailView(RetrieveUpdateDestroyAPIView):
 
         category_obj = get_object_or_404(Category_product, pk=category_id)
         products_list = Product.objects.filter(category=category_obj)
-        # ipdb.set_trace()
+
         return category_obj
 
 

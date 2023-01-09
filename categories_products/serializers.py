@@ -39,6 +39,8 @@ class CategorySerializer(serializers.ModelSerializer):
             "products",
         ]
 
+        read_only_fields = ["products"]
+
         extra_kwargs = {
             "name": {
                 "validators": [
