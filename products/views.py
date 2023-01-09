@@ -47,7 +47,9 @@ class OrderProductView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         get_object_or_404(Address, id=self.request.data["address"])
+        
         get_object_or_404(Category_product, name=self.request.data["category"])
+
         serializer.save(
             user=self.request.user,
             **self.request.data,

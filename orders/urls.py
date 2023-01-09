@@ -7,4 +7,8 @@ urlpatterns = [
         "order/",
         views.OrderView.as_view(),
     ),
+    path(
+        "order/<uuid:order_id>/",
+        views.OrderDetailView.as_view(),
+    ),
 ]
