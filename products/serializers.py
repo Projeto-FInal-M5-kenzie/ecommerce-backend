@@ -129,7 +129,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
         name_product = validated_data.pop("name_product")
         product_qtd = validated_data.pop("quantity_product")
         user = validated_data.pop("user")
-        order_obj = Order.objects.get_or_create(user=user)[0]
+        order_obj = Order.objects.get_or_create(user=user, address=user.addresses)[0]
         count = 0
 
         products_list = Product.objects.filter(

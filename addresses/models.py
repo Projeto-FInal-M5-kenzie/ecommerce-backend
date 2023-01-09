@@ -14,5 +14,5 @@ class Address(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     users = models.ManyToManyField(
-        "users.User", related_name="Addresses"
+        "users.User", related_name="addresses"
     )
