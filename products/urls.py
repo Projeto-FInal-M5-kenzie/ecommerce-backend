@@ -12,7 +12,7 @@ urlpatterns = [
         views.ProductDetailView.as_view(),
     ),
     path(
-        "product/<uuid:product_id>/order_product/",
+        "product/order_product/",
         views.OrderProductView.as_view(),
     ),
     path(

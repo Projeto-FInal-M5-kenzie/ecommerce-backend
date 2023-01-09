@@ -7,7 +7,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
 
-
 class ProductView(generics.ListCreateAPIView):
 
     queryset = Product.objects.all()
@@ -17,10 +16,10 @@ class ProductView(generics.ListCreateAPIView):
         serializer.save(**self.request.data)
 
     def get_queryset(self):
-        route_parameter = self.request.GET.get("product_name")
+        route_parameter = self.request.GET.get("name_product")
+        
         if route_parameter:
-
-            return Product.objects.filter(product_name__icontains=route_parameter)
+            return Product.objects.filter(name_product__icontains=route_parameter)
 
         return super().get_queryset()
 
@@ -46,12 +45,12 @@ class OrderProductView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
 
-        product_id = self.kwargs["product_id"]
+        # product_id = self.kwargs["product_id"]
 
-        product_obj = get_object_or_404(Product, pk=product_id)
+        # product_obj = get_object_or_404(Product, pk=product_id)
         serializer.save(
             user=self.request.user,
-            product=product_obj,
+            # product=product_obj,
             **self.request.data,
         )
 

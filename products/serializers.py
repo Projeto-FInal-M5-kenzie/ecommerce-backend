@@ -19,13 +19,12 @@ class ProductSerializer(serializers.ModelSerializer):
 
         try:
 
-            
             product_obj_list = Product.objects.filter(
                 name_product=name_product, category=category_obj
             )
 
             stock = len(product_obj_list)
-            
+
             if stock > 0:
                 product_bulk_update_list = []
 
@@ -34,8 +33,8 @@ class ProductSerializer(serializers.ModelSerializer):
                 for product in product_obj_list:
                     product.stock = stock
                     product_bulk_update_list.append(product)
-                
-                Product.objects.bulk_update(product_bulk_update_list, ['stock'])
+
+                Product.objects.bulk_update(product_bulk_update_list, ["stock"])
 
                 product_list = [
                     Product(
@@ -52,7 +51,7 @@ class ProductSerializer(serializers.ModelSerializer):
                 # Product.objects.bulk_update(
                 #     [
                 #         product.update()
-                #         for product in product_obj_list 
+                #         for product in product_obj_list
                 #     ],
                 #     ["stock"],
                 # )
@@ -86,7 +85,10 @@ class ProductSerializer(serializers.ModelSerializer):
             )
         )
 
-        return dict(quantity=qtd, product=obj.name_product,)
+        return dict(
+            quantity=qtd,
+            product=obj.name_product,
+        )
 
     class Meta:
 
@@ -122,11 +124,27 @@ class OrderProductSerializer(serializers.ModelSerializer):
         depth = 1
 
     def create(self, validated_data: dict) -> OrderProduct:
-        product = validated_data.pop("product")
+        category_obj = Category_product.objects.get(name=validated_data.pop("category"))
+
+        name_product = validated_data.pop("name_product")
+        product_qtd = validated_data.pop("quantity_product")
         user = validated_data.pop("user")
-        order_product = OrderProduct.objects.create(**validated_data, product=product)
         order_obj = Order.objects.get_or_create(user=user)[0]
-        
-        order_obj.order_products.add(order_product)
+        count = 0
+
+        products_list = Product.objects.filter(
+            name_product=name_product, category=category_obj
+        )
+        order_product = validated_data
+        for product in products_list:
+            count += 1
+            if count > product_qtd:
+                break
+
+            order_product = OrderProduct.objects.get_or_create(
+                **validated_data, product=product, quantity_product=product_qtd
+            )[0]
+
+            order_obj.order_products.add(order_product)
 
         return order_product
