@@ -10,5 +10,6 @@ class User(AbstractUser):
     email = models.EmailField(unique=True, max_length=150)
     cpf = models.CharField(max_length=11, unique=True)
     phone = models.CharField(max_length=13)
+    is_seller = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
