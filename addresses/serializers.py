@@ -15,10 +15,14 @@ class AddressSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = validated_data.pop("users")
+        seller = validated_data.pop("sellers")
 
         address = Address.objects.get_or_create(**validated_data)[0]
 
-        address.users.add(user)
+        if user:
+            address.users.add(user)
+        elif seller:
+            address.sellers.add(seller)
 
         return address
     

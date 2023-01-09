@@ -16,3 +16,7 @@ class Address(models.Model):
     users = models.ManyToManyField(
         "users.User", related_name="addresses"
     )
+
+    sellers = models.ManyToManyField(
+        "sellers.Seller", related_name="Addresses"
+    )

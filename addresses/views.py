@@ -37,7 +37,7 @@ class AddressViewSeller(ListCreateAPIView):
 
         seller = get_object_or_404(User, pk=seller_id)
 
-        return serializer.save(users=seller)
+        return serializer.save(sellers=seller)
 
     def get_queryset(self):
         seller_id = self.kwargs("seller_id")
