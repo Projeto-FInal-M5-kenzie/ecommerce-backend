@@ -8,8 +8,6 @@ import ipdb
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    products = ProductSerializer(required=False, many=True)
-
     def create(self, validated_data: dict) -> Category_product:
 
         return Category_product.objects.create(**validated_data)
@@ -40,6 +38,8 @@ class CategorySerializer(serializers.ModelSerializer):
             "is_deleted",
             "products",
         ]
+
+        read_only_fields = ["products"]
 
         extra_kwargs = {
             "name": {
