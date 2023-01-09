@@ -17,6 +17,8 @@ class SellerSerializer(serializers.ModelSerializer):
             "is_active",
             "created_at",
             "updated_at",
+            "deleted_at",
+            "is_deleted",
             "client",
         ]
         extra_kwargs = {
