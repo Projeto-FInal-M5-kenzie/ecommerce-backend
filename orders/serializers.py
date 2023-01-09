@@ -1,10 +1,8 @@
 from rest_framework import serializers
 from .models import Order
-from deliveries.serializers import DeliverySerializer
-
+import ipdb
 
 class OrderSerializer(serializers.ModelSerializer):
-    delivery = DeliverySerializer(required=False)
 
     class Meta:
 
@@ -14,9 +12,12 @@ class OrderSerializer(serializers.ModelSerializer):
             "id",
             "created_at",
             "updated_at",
-            "user",
-            "delivery",
+            # "user",
+            "products",
+            "order_products"
+            # "delivery",
         ]
+        depth = 1
 
     def create(self, validated_data: dict) -> Order:
 

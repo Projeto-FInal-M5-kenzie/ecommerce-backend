@@ -50,4 +50,5 @@ class CategorySerializer(serializers.ModelSerializer):
                     )
                 ]
             },
+            "products": {"read_only": True},
         }

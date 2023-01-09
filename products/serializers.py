@@ -2,13 +2,15 @@ from rest_framework import serializers
 from .models import OrderProduct, Product
 from orders.models import Order
 from categories_products.models import Category_product
+import ipdb
 
 
 class ProductSerializer(serializers.ModelSerializer):
-
+    quantity = serializers.IntegerField(default=1, write_only=True)
     stock = serializers.SerializerMethodField(read_only=True)
 
     def create(self, validated_data: dict) -> Product:
+        product_qtd = 1
         product_qtd = validated_data.pop("quantity")
         category_id = validated_data.pop("category")
         category_obj = Category_product.objects.get(id=category_id)
@@ -17,19 +19,23 @@ class ProductSerializer(serializers.ModelSerializer):
 
         try:
 
-            stock = len(
-                Product.objects.filter(
-                    name_product=name_product,
-                    category=category_obj,
-                )
-            )
-            product_obj = Product.objects.filter(
+            product_obj_list = Product.objects.filter(
                 name_product=name_product, category=category_obj
             )
 
-            if len(product_obj) > 0:
+            stock = len(product_obj_list)
+
+            if stock > 0:
+                product_bulk_update_list = []
 
                 stock += product_qtd
+
+                for product in product_obj_list:
+                    product.stock = stock
+                    product_bulk_update_list.append(product)
+
+                Product.objects.bulk_update(product_bulk_update_list, ["stock"])
+
                 product_list = [
                     Product(
                         **validated_data,
@@ -42,19 +48,23 @@ class ProductSerializer(serializers.ModelSerializer):
 
                 Product.objects.bulk_create(product_list)
 
+                # Product.objects.bulk_update(
+                #     [
+                #         product.update()
+                #         for product in product_obj_list
+                #     ],
+                #     ["stock"],
+                # )
                 return product_list[0]
-
             raise Product.DoesNotExist
 
         except Product.DoesNotExist:
-
-            stock += product_qtd
 
             product_list = [
                 Product(
                     **validated_data,
                     category=category_obj,
-                    stock=stock,
+                    stock=product_qtd,
                     name_product=name_product
                 )
                 for _ in range(product_qtd)
@@ -75,7 +85,10 @@ class ProductSerializer(serializers.ModelSerializer):
             )
         )
 
-        return dict(quantity=qtd, product=obj.name_product)
+        return dict(
+            quantity=qtd,
+            product=obj.name_product,
+        )
 
     class Meta:
 
@@ -108,8 +121,30 @@ class OrderProductSerializer(serializers.ModelSerializer):
             "product",
         ]
 
-    def create(self, validated_data: dict) -> OrderProduct:
+        depth = 1
 
+    def create(self, validated_data: dict) -> OrderProduct:
+        category_obj = Category_product.objects.get(name=validated_data.pop("category"))
+
+        name_product = validated_data.pop("name_product")
+        product_qtd = validated_data.pop("quantity_product")
         user = validated_data.pop("user")
-        order_obj = Order.objects.create(user=user)
-        return OrderProduct.objects.create(**validated_data, order=order_obj)
+        order_obj = Order.objects.get_or_create(user=user)[0]
+        count = 0
+
+        products_list = Product.objects.filter(
+            name_product=name_product, category=category_obj
+        )
+        order_product = validated_data
+        for product in products_list:
+            count += 1
+            if count > product_qtd:
+                break
+
+            order_product = OrderProduct.objects.get_or_create(
+                **validated_data, product=product, quantity_product=product_qtd
+            )[0]
+
+            order_obj.order_products.add(order_product)
+
+        return order_product
