@@ -11,7 +11,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("categories_products", "0001_initial"),
-        ("orders", "0001_initial"),
+        ("sellers", "0002_initial"),
+        ("orders", "0003_order_address"),
     ]
 
     operations = [
@@ -28,6 +29,16 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("quantity_product", models.IntegerField(null=True)),
+                (
+                    "order",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="order_products",
+                        to="orders.order",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
@@ -65,6 +76,23 @@ class Migration(migrations.Migration):
                         to="orders.order",
                     ),
                 ),
+                (
+                    "sellers",
+                    models.ManyToManyField(
+                        related_name="products", to="sellers.seller"
+                    ),
+                ),
             ],
+        ),
+        migrations.AddField(
+            model_name="orderproduct",
+            name="product",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="order_products",
+                to="products.product",
+            ),
         ),
     ]
