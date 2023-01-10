@@ -56,6 +56,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "softdelete",
     'drf_spectacular',
+    'rest_framework_swagger',
 ]
 
 MY_APPS = [
@@ -169,7 +170,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
