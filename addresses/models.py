@@ -21,10 +21,6 @@ class Address(models.Model):
         blank=True,
     )
 
-    seller = models.ForeignKey(
-        "sellers.Seller",
-        related_name="Addresses",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
+    sellers = models.ManyToManyField(
+        "sellers.Seller", related_name="Addresses", 
     )
