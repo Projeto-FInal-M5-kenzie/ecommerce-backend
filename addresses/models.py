@@ -1,8 +1,9 @@
 from django.db import models
 import uuid
 
+
 class Address(models.Model):
-    
+
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     city = models.CharField(max_length=150)
     state = models.CharField(max_length=150)
@@ -14,9 +15,12 @@ class Address(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     users = models.ManyToManyField(
-        "users.User", related_name="addresses"
+        "users.User",
+        related_name="addresses",
+        null=True,
+        blank=True,
     )
 
     sellers = models.ManyToManyField(
-        "sellers.Seller", related_name="Addresses"
+        "sellers.Seller", related_name="Addresses", 
     )
