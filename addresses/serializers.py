@@ -1,52 +1,20 @@
 from rest_framework import serializers
-
-
 from .models import Address
 from sellers.serializers import SellerSerializer
 from users.serializers import UserSerializer
-
-from sellers.serializers import SellerSerializer
-from users.serializers import UserSerializer
-
 import ipdb
 
 
 class AddressSellerSerializer(serializers.ModelSerializer):
-class AddressSellerSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
-        seller = validated_data.pop("seller")
         seller = validated_data.pop("seller")
 
         address = Address.objects.get_or_create(**validated_data)[0]
 
         address.seller = seller
-        address.seller = seller
 
         return address
 
-    seller = SellerSerializer(read_only=True)
-
-    class Meta:
-
-        model = Address
-
-        fields = [
-            "id",
-            "city",
-            "state",
-            "zip_code",
-            "district",
-            "number",
-            "complement",
-            "created_at",
-            "update_at",
-            "seller",
-        ]
-
-        read_only_fields = ["created_at", "update_at"]
-
-
-class AddressUserSerializer(serializers.ModelSerializer):
     seller = SellerSerializer(read_only=True)
 
     class Meta:
@@ -79,15 +47,8 @@ class AddressUserSerializer(serializers.ModelSerializer):
 
         request = self.context["request"].get_full_path()
         print(request)
-        address.users.add(user)
-
-        request = self.context["request"].get_full_path()
-        print(request)
 
         return address
-
-    users = UserSerializer(read_only=True, many=True)
-
 
     users = UserSerializer(read_only=True, many=True)
 
@@ -105,7 +66,6 @@ class AddressUserSerializer(serializers.ModelSerializer):
             "complement",
             "created_at",
             "update_at",
-            "users",
             "users",
         ]
 
