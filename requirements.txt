@@ -15,7 +15,7 @@ Django==4.1
 django-rest-swagger==2.2.0
 django-soft-delete==0.9.21
 django-softdelete==0.9.4
-djangorestframework==3.13.1
+djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 drf-spectacular==0.25.1
 exceptiongroup==1.1.0
