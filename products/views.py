@@ -7,7 +7,6 @@ from categories_products.models import Category_product
 from .serializers import ProductSerializer, OrderProductSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-import ipdb
 
 class ProductView(generics.ListCreateAPIView):
 
