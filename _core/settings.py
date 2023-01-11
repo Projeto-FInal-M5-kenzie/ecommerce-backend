@@ -59,16 +59,6 @@ THIRD_PARTY_APPS = [
     "softdelete",
     "drf_spectacular",
     "rest_framework_swagger",
-    "django_registration",
-    "django_otp",
-    "django_otp.plugins.otp_static",
-    "django_otp.plugins.otp_totp",
-    "django_otp.plugins.otp_email",
-    "two_factor",
-    "two_factor.plugins.phonenumber",
-    "two_factor.plugins.email",
-    "two_factor.plugins.yubikey",
-    "otp_yubikey",
 ]
 
 MY_APPS = [
@@ -128,7 +118,7 @@ DATABASES = {
         "HOST": os.getenv("HOST"),
         "PORT": os.getenv("PORT"),
     },
-    "database": {
+    "db": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     },
