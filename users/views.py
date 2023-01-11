@@ -1,15 +1,20 @@
+import datetime
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, LoginSerializer
 from rest_framework import generics
 from rest_framework.views import APIView, Request, Response, status
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import BadRequest
-
+from django.contrib.auth import authenticate, signals
 from .models import User
 from .serializers import UserSerializer
 from .permissions import IsAdmAuthorization, IsUserOwnerAuthentication
+import ipdb
+from django.http import JsonResponse
+from django.contrib import messages
+from rest_framework.exceptions import ErrorDetail
 
 
 class RegisterUserView(generics.ListCreateAPIView):
@@ -19,6 +24,41 @@ class RegisterUserView(generics.ListCreateAPIView):
     def get_queryset(self):
 
         return self.queryset.all()
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        data = dict(
+            message="An email has been sent on your mail.",
+        )
+
+        return Response(
+            data=data, status=status.HTTP_307_TEMPORARY_REDIRECT, headers=headers
+        )
+
+
+class ActivateUser(APIView):
+    def post(self, req: Request, email_token: str) -> Response:
+        try:
+            users_obj = User.objects.get(email_token=email_token)
+
+            if req.data["is_email_verified"]:
+                users_obj.is_email_verified = req.data["is_email_verified"]
+
+                serializer = UserSerializer(users_obj)
+                
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            
+            raise ErrorDetail
+
+        except Exception as error:
+
+            return Response(
+                data={"Invalid Email token"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):

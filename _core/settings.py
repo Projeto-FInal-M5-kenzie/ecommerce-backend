@@ -15,7 +15,9 @@ from pathlib import Path
 from datetime import timedelta
 import os
 import dotenv
+import environ
 import dj_database_url
+
 
 dotenv.load_dotenv()
 
@@ -57,6 +59,16 @@ THIRD_PARTY_APPS = [
     "softdelete",
     "drf_spectacular",
     "rest_framework_swagger",
+    "django_registration",
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_email",
+    "two_factor",
+    "two_factor.plugins.phonenumber",
+    "two_factor.plugins.email",
+    "two_factor.plugins.yubikey",
+    "otp_yubikey",
 ]
 
 MY_APPS = [
@@ -78,6 +90,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -107,7 +120,7 @@ WSGI_APPLICATION = "_core.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "db": {
+    "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("POSTGRES_DB"),
         "USER": os.getenv("POSTGRES_USER"),
@@ -115,7 +128,7 @@ DATABASES = {
         "HOST": os.getenv("HOST"),
         "PORT": os.getenv("PORT"),
     },
-    "default": {
+    "db": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     },
@@ -141,6 +154,38 @@ if not DEBUG:
     # and creating unique names for each version so they can safely be cached forever.
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+
+env = environ.Env(DEBUG=(bool, False))
+
+
+environ.Env.read_env(BASE_DIR / ".env")
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+
+
+LOGIN_URL = "two_factor:login"
+# LOGIN_REDIRECT_URL = "two_factor:login"
+# this one is optional
+LOGOUT_REDIRECT_URL = "two_factor:profile"
+
+TWO_FACTOR_PATCH_ADMIN = True
+# ACCOUNT_ACTIVATION_DAYS = 7
+
+# AXES_LOCK_OUT_AT_FAILURE = True
+# AXES_FAILURE_LIMIT = 5
+# AXES_LOCKOUT_CALLABLE = "users.views.lockout"
+
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -158,6 +203,7 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=5),

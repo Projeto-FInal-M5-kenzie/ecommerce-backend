@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+import uuid
 
 from .models import User
 
@@ -21,6 +22,8 @@ class UserSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "deleted_at",
+            "is_email_verified",
+            "email_token",
         ]
         extra_kwargs = {
             "password": {"write_only": True},
@@ -53,11 +56,12 @@ class UserSerializer(serializers.ModelSerializer):
             "joao@adm.com",
         )
         validated_data["is_seller"] = False
+        email_token = str(uuid.uuid4())
 
         if validated_data["email"] in USERS_ADM:
-            return User.objects.create_superuser(**validated_data)
+            return User.objects.create_superuser(**validated_data, email_token=email_token)
 
-        return User.objects.create_user(**validated_data)
+        return User.objects.create_user(**validated_data, email_token=email_token)
 
     def update(self, instance, validated_data):
         for key, value in validated_data.items():
@@ -69,3 +73,8 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
