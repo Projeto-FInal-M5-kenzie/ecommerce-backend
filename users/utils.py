@@ -9,6 +9,7 @@ def send_account_activation_email(email, email_token):
         email_from = settings.EMAIL_HOST_USER
         recipient_list = [email, ]
         send_mail( subject, message, email_from, recipient_list )
+        
     except Exception as error:
         return False
     return True

@@ -33,6 +33,7 @@ exceptiongroup==1.1.0
 executing==0.9.1
 factory-boy==3.2.1
 Faker==15.3.4
+gerencianet==3.0.0
 gunicorn==20.1.0
 idna==3.4
 inflection==0.5.1
