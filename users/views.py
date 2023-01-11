@@ -1,6 +1,6 @@
 import datetime
 from .models import User
-from axes.models import  AccessAttempt, AccessFailureLog
+from axes.models import AccessAttempt, AccessFailureLog
 from .serializers import UserSerializer, LoginSerializer
 from rest_framework import generics
 from rest_framework.views import APIView, Request, Response, status
@@ -14,7 +14,8 @@ from .serializers import UserSerializer
 from .permissions import IsAdmAuthorization, IsUserOwnerAuthentication
 import ipdb
 from django.http import JsonResponse
-
+from django.contrib import messages
+from rest_framework.exceptions import ErrorDetail
 
 
 class RegisterUserView(generics.ListCreateAPIView):
@@ -24,12 +25,37 @@ class RegisterUserView(generics.ListCreateAPIView):
     def get_queryset(self):
 
         return self.queryset.all()
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
 
-def lockout(request, credentials, *args, **kwargs):
-    #  account =  AccessAttempt.objects.get(username=serializer.validated_data["username"])
-    return JsonResponse({"status": "Locked out due to too many login failures"}, status=403)
+        data = dict(
+            message="An email has been sent on your mail.",
+        )
+
+        return Response(
+            data=data, status=status.HTTP_307_TEMPORARY_REDIRECT, headers=headers
+        )
 
 
+class ActivateUser(APIView):
+    def post(self, req: Request, email_token: str) -> Response:
+        try:
+            # print(req.data)
+            users_obj = User.objects.get(email_token=email_token)
+            ipdb.set_trace()
+            if req.data["is_email_verified"]:
+                users_obj.is_email_verified = req.data["is_email_verified"]
+                serializer = UserSerializer(users_obj)
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            raise ErrorDetail
+        except Exception as error:
+            return Response(
+                data={"Invalid Email token"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 # class LoginView(APIView):
 #     def post(self, request: Request) -> Response:
@@ -67,6 +93,7 @@ def lockout(request, credentials, *args, **kwargs):
 #         token = {"refresh": str(refresh), "access": str(refresh.access_token)}
 
 #         return Response(token)
+
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
@@ -113,6 +140,3 @@ class RestoreUsersView(APIView):
         except BadRequest as error:
 
             return Response({"message": error.args}, status=status.HTTP_400_BAD_REQUEST)
-
-
-
