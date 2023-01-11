@@ -5,6 +5,9 @@ from addresses.models import Address
 from orders.serializers import OrderSerializer
 from categories_products.models import Category_product
 from django.shortcuts import get_object_or_404
+
+from sellers.serializers import SellerSerializer
+from sellers.models import Seller
 import ipdb
 
 
@@ -17,6 +20,8 @@ class ProductSerializer(serializers.ModelSerializer):
         product_qtd = validated_data.pop("quantity")
         category_id = validated_data.pop("category")
         category_obj = Category_product.objects.get(id=category_id)
+        seller_obj = validated_data.pop("seller")
+        # seller_obj = Seller.objects.filter(id=seller_id).first()
 
         name_product = validated_data.pop("name_product")
 
@@ -44,6 +49,7 @@ class ProductSerializer(serializers.ModelSerializer):
                         **validated_data,
                         category=category_obj,
                         stock=stock,
+                        seller=seller_obj,
                         name_product=name_product
                     )
                     for _ in range(product_qtd)
@@ -61,6 +67,7 @@ class ProductSerializer(serializers.ModelSerializer):
                     **validated_data,
                     category=category_obj,
                     stock=product_qtd,
+                    seller=seller_obj,
                     name_product=name_product
                 )
                 for _ in range(product_qtd)
@@ -94,15 +101,17 @@ class ProductSerializer(serializers.ModelSerializer):
             "id",
             "name_product",
             "description",
-            "is_active",
             "price",
             "stock",
+            "is_active",
             "created_at",
             "category",
             "quantity",
+            "seller",
         ]
 
         extra_kwargs = {"quantity": {"write_only": True}}
+        read_only_fields = ["seller"]
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
