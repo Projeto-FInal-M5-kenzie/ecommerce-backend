@@ -1,6 +1,5 @@
 import datetime
 from .models import User
-from axes.models import AccessAttempt, AccessFailureLog
 from .serializers import UserSerializer, LoginSerializer
 from rest_framework import generics
 from rest_framework.views import APIView, Request, Response, status
@@ -54,7 +53,7 @@ class ActivateUser(APIView):
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             
             raise ErrorDetail
-            
+
         except Exception as error:
 
             return Response(
