@@ -107,6 +107,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class OrderProductSerializer(serializers.ModelSerializer):
     address = ()
+
     class Meta:
 
         model = OrderProduct
@@ -129,7 +130,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
         user = validated_data.pop("user")
         # ipdb.set_trace()
         # address = get_object_or_404(Address, id=address_id)
-   
+
         order_obj = Order.objects.filter(user__id=user.id).first()
 
         if not order_obj:
@@ -140,7 +141,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
         products_list = Product.objects.filter(
             name_product=name_product, category=category_obj
         )
-        
+
         order_product = validated_data
 
         for product in products_list:
