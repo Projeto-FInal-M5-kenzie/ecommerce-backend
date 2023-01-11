@@ -44,55 +44,22 @@ class RegisterUserView(generics.ListCreateAPIView):
 class ActivateUser(APIView):
     def post(self, req: Request, email_token: str) -> Response:
         try:
-            # print(req.data)
             users_obj = User.objects.get(email_token=email_token)
-            ipdb.set_trace()
+
             if req.data["is_email_verified"]:
                 users_obj.is_email_verified = req.data["is_email_verified"]
+
                 serializer = UserSerializer(users_obj)
+                
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
+            
             raise ErrorDetail
+            
         except Exception as error:
+
             return Response(
                 data={"Invalid Email token"}, status=status.HTTP_400_BAD_REQUEST
             )
-
-# class LoginView(APIView):
-#     def post(self, request: Request) -> Response:
-#         serializer = LoginSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-
-#         user = authenticate(
-#             request=request,
-#             username=serializer.validated_data["username"],
-#             password=serializer.validated_data["password"],
-#         )
-
-#         if not user:
-#             account =  AccessAttempt.objects.get(username=serializer.validated_data["username"])
-#             current_time =  datetime.datetime.now()
-#             number_of_attempts =  account.failures_since_start
-#             threshold = (number_of_attempts / 5)
-#             ipdb.set_trace()
-
-#             a = signals.user_login_failed.send(
-#                 sender=User,
-#                 request=request,
-#                 credentials={
-#                     'username': serializer.validated_data["username"],
-#                 },
-
-#             )
-#             return Response(status=403)
-#             # return Response(
-#             #     {"detail": "invalid credentials"}, status.HTTP_403_FORBIDDEN
-#             # )
-
-#         refresh = RefreshToken.for_user(user)
-
-#         token = {"refresh": str(refresh), "access": str(refresh.access_token)}
-
-#         return Response(token)
 
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
