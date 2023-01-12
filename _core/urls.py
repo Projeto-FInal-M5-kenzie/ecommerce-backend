@@ -20,7 +20,6 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
     SpectacularRedocView,
 )
-from two_factor.urls import urlpatterns as tf_urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -31,7 +30,6 @@ urlpatterns = [
     path("api/", include("orders.urls")),
     path("api/", include("addresses.urls")),
     path("api/", include("payments.urls")),
-    path("", include(tf_urls)),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "schema/swagger-ui/",

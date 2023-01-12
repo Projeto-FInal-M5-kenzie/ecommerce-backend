@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework.views import APIView, Request, Response, status
 from payments.models import PixModel
-import ipdb
+
+
 # Create your views here.
 class TokenView(APIView):
     def post(self, req: Request) -> Response:
@@ -19,5 +20,4 @@ class PixView(APIView):
         # pix_model.create_charge()
         response = pix_model.create_charge(txid=txid, payload=payload)
 
-        ipdb.set_trace()
-        return Response(response)
+        return Response(response, status=response.status_code)

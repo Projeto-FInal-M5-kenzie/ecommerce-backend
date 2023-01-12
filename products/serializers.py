@@ -8,7 +8,6 @@ from django.shortcuts import get_object_or_404
 
 from sellers.serializers import SellerSerializer
 from sellers.models import Seller
-import ipdb
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -137,8 +136,6 @@ class OrderProductSerializer(serializers.ModelSerializer):
         product_qtd = validated_data.pop("quantity_product")
         address = Address.objects.get(id=validated_data.pop("address"))
         user = validated_data.pop("user")
-        # ipdb.set_trace()
-        # address = get_object_or_404(Address, id=address_id)
 
         order_obj = Order.objects.filter(user__id=user.id).first()
 

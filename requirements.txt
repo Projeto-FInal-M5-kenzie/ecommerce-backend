@@ -15,14 +15,10 @@ dj-database-url==1.2.0
 Django==4.1
 django-environ==0.9.0
 django-formtools==2.4
-django-otp==1.1.4
-django-otp-yubikey==1.0.1
 django-phonenumber-field==6.4.0
-django-registration==3.3
 django-rest-swagger==2.2.0
 django-soft-delete==0.9.21
 django-softdelete==0.9.4
-django-two-factor-auth==1.14.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 drf-spectacular==0.25.1
@@ -54,6 +50,7 @@ pathspec==0.9.0
 pexpect==4.8.0
 phonenumbers==8.13.4
 pickleshare==0.7.5
+Pillow==9.4.0
 platformdirs==2.5.2
 pluggy==1.0.0
 prompt-toolkit==3.0.30
@@ -65,6 +62,7 @@ pycryptodome==3.16.0
 Pygments==2.12.0
 PyJWT==2.6.0
 pyparsing==3.0.9
+pypng==0.20220715.0
 PyQRCode==1.2.1
 pyrsistent==0.19.3
 pytest==7.2.0

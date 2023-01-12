@@ -15,7 +15,6 @@ from .permissions import (
     IsUserOwnerAuthentication,
     IsListUserAuthorizationAdm,
 )
-import ipdb
 from django.http import JsonResponse
 from django.contrib import messages
 from rest_framework.exceptions import ErrorDetail
@@ -65,8 +64,10 @@ class ActivateUser(APIView):
                 users_obj.is_email_verified = req.data["is_email_verified"]
 
                 serializer = UserSerializer(users_obj)
+                
+                message = {"Your account is valid!"}
 
-                return Response(data=serializer.data, status=status.HTTP_200_OK)
+                return Response(data=message, status=status.HTTP_200_OK)
 
             raise ErrorDetail
 
