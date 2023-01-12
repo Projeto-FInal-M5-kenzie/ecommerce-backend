@@ -59,6 +59,16 @@ THIRD_PARTY_APPS = [
     "softdelete",
     "drf_spectacular",
     "rest_framework_swagger",
+    "django_registration",
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_email",
+    "two_factor",
+    "two_factor.plugins.phonenumber",
+    "two_factor.plugins.email",
+    "two_factor.plugins.yubikey",
+    "otp_yubikey",
 ]
 
 MY_APPS = [
@@ -110,7 +120,7 @@ WSGI_APPLICATION = "_core.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
+    "database": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("POSTGRES_DB"),
         "USER": os.getenv("POSTGRES_USER"),
@@ -118,7 +128,7 @@ DATABASES = {
         "HOST": os.getenv("HOST"),
         "PORT": os.getenv("PORT"),
     },
-    "db": {
+    "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     },
@@ -159,8 +169,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_TLS = True
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER2")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD2")
 
 
 LOGIN_URL = "two_factor:login"

@@ -10,24 +10,28 @@ from django.core.exceptions import BadRequest
 from django.contrib.auth import authenticate, signals
 from .models import User
 from .serializers import UserSerializer
-from .permissions import IsAdmAuthorization, IsUserOwnerAuthentication
+from .permissions import (
+    IsAdmAuthorization,
+    IsUserOwnerAuthentication,
+    IsListUserAuthorizationAdm,
+)
 import ipdb
 from django.http import JsonResponse
 from django.contrib import messages
 from rest_framework.exceptions import ErrorDetail
 
 
-class RegisterUserView(generics.ListCreateAPIView):
+class RegisterUserView(generics.CreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    # permission_classes = [IsListUserAuthorizationAdm]
+
     serializer_class = UserSerializer
     queryset = User.global_objects.all()
 
-    def get_queryset(self):
-
-        return self.queryset.all()
-    
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
@@ -40,6 +44,18 @@ class RegisterUserView(generics.ListCreateAPIView):
         )
 
 
+class ListUserView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsListUserAuthorizationAdm]
+
+    serializer_class = UserSerializer
+    queryset = User.global_objects.all()
+
+    def get_queryset(self):
+
+        return self.queryset.all()
+
+
 class ActivateUser(APIView):
     def post(self, req: Request, email_token: str) -> Response:
         try:
@@ -49,9 +65,9 @@ class ActivateUser(APIView):
                 users_obj.is_email_verified = req.data["is_email_verified"]
 
                 serializer = UserSerializer(users_obj)
-                
+
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
-            
+
             raise ErrorDetail
 
         except Exception as error:

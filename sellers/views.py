@@ -1,5 +1,13 @@
+from rest_framework import generics
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.views import APIView, Request, Response, status
+
+from django.core.exceptions import BadRequest
+from django.shortcuts import get_object_or_404
+
 from .models import Seller
 from .serializers import SellerSerializer
+from products.serializers import ProductSerializer
 
 from users.permissions import (
     IsSellerAuthorization,
@@ -7,11 +15,7 @@ from users.permissions import (
     IsSellerListAuthorization,
 )
 
-from rest_framework import generics
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from django.core.exceptions import BadRequest
-from rest_framework.views import APIView, Request, Response, status
-
+from products.models import Product
 
 import ipdb
 
@@ -33,6 +37,21 @@ class ListSellerView(generics.ListAPIView):
 
     serializer_class = SellerSerializer
     queryset = Seller.global_objects.all()
+
+
+class ListProductsForSellerView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    # permission_classes = [IsSellerListAuthorization]
+
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+
+    def get_queryset(self):
+
+        seller_id = self.kwargs["seller_id"]
+        seller_obj = get_object_or_404(Seller, pk=seller_id)
+
+        return self.queryset.all().filter(seller=seller_obj)
 
 
 class SellerDetailView(generics.RetrieveUpdateDestroyAPIView):
