@@ -15,11 +15,13 @@ from pathlib import Path
 from datetime import timedelta
 import os
 import dotenv
+import environ
 import dj_database_url
+
 
 dotenv.load_dotenv()
 
-SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
+SECRET_KEY = os.getenv("SECRET_KEY", get_random_secret_key())
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +42,7 @@ RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-    
+
 # Application definition
 
 DJANGO_APPS = [
@@ -55,8 +57,18 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "rest_framework",
     "softdelete",
-    'drf_spectacular',
-    'rest_framework_swagger',
+    "drf_spectacular",
+    "rest_framework_swagger",
+    "django_registration",
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_email",
+    "two_factor",
+    "two_factor.plugins.phonenumber",
+    "two_factor.plugins.email",
+    "two_factor.plugins.yubikey",
+    "otp_yubikey",
 ]
 
 MY_APPS = [
@@ -78,6 +90,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -108,26 +121,27 @@ WSGI_APPLICATION = "_core.wsgi.application"
 
 DATABASES = {
     "default": {
-    "ENGINE": "django.db.backends.postgresql",
-    "NAME": os.getenv("POSTGRES_DB"),
-    "USER": os.getenv("POSTGRES_USER"),
-    "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-    "HOST": os.getenv("HOST"),
-    "PORT": os.getenv("PORT"),
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("HOST"),
+        "PORT": os.getenv("PORT"),
     },
-    "database": {
+    "db": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
 }
 
 
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL:
     db_from_env = dj_database_url.config(
-        default=DATABASE_URL, conn_max_age=500, ssl_require=True)
-    DATABASES['default'].update(db_from_env)
+        default=DATABASE_URL, conn_max_age=500, ssl_require=True
+    )
+    DATABASES["default"].update(db_from_env)
     DEBUG = False
 
 if not DEBUG:
@@ -139,6 +153,38 @@ if not DEBUG:
     # Turn on WhiteNoise storage backend that takes care of compressing static files
     # and creating unique names for each version so they can safely be cached forever.
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+
+env = environ.Env(DEBUG=(bool, False))
+
+
+environ.Env.read_env(BASE_DIR / ".env")
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER2")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD2")
+
+
+LOGIN_URL = "two_factor:login"
+# LOGIN_REDIRECT_URL = "two_factor:login"
+# this one is optional
+LOGOUT_REDIRECT_URL = "two_factor:profile"
+
+TWO_FACTOR_PATCH_ADMIN = True
+# ACCOUNT_ACTIVATION_DAYS = 7
+
+# AXES_LOCK_OUT_AT_FAILURE = True
+# AXES_FAILURE_LIMIT = 5
+# AXES_LOCKOUT_CALLABLE = "users.views.lockout"
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -158,6 +204,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
@@ -165,9 +212,9 @@ SIMPLE_JWT = {
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 10,
 }
 
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -197,9 +244,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'E-Shopping API',
-    'DESCRIPTION': 'Your project description',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': True,
+    "TITLE": "E-Shopping API",
+    "DESCRIPTION": "Your project description",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": True,
     # OTHER SETTINGS
 }

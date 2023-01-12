@@ -8,6 +8,10 @@ urlpatterns = [
         views.ProductView.as_view(),
     ),
     path(
+        "product/seller/<uuid:seller_id>/",
+        views.RegisterProductView.as_view(),
+    ),
+    path(
         "product/<uuid:product_id>/",
         views.ProductDetailView.as_view(),
     ),
