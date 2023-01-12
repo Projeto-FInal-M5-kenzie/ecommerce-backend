@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django_softdelete.models import SoftDeleteModel, SoftDeleteManager
 from django.dispatch import receiver
+
 from .utils import send_account_activation_email
 from django.db.models.signals import post_save
 import uuid
