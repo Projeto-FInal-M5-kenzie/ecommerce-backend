@@ -11,6 +11,17 @@ class IsAdmAuthorization(permissions.BasePermission):
         return request.user.is_authenticated and request.user.is_superuser
 
 
+class IsListUserAuthorizationAdm(permissions.BasePermission):
+    def has_permission(self, request, view):
+        SAFE_METHODS = ("GET", "HEAD", "OPTIONS")
+
+        return bool(
+            request.method in SAFE_METHODS
+            and request.user.is_authenticated
+            and request.user.is_superuser
+        )
+
+
 class IsSellerAuthorization(permissions.BasePermission):
     def has_permission(self, request, view):
         return (
