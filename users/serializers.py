@@ -24,6 +24,8 @@ class UserSerializer(serializers.ModelSerializer):
             "deleted_at",
             "is_email_verified",
             "email_token",
+            "otp",
+            
         ]
         extra_kwargs = {
             "password": {"write_only": True},

@@ -18,6 +18,46 @@ from .permissions import (
 from django.http import JsonResponse
 from django.contrib import messages
 from rest_framework.exceptions import ErrorDetail
+from .utils import send_otp_mail
+import random
+import ipdb
+
+
+class LoginView(APIView):
+    def post(self, request: Request) -> Response:
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = authenticate(
+            username=serializer.validated_data["username"],
+            password=serializer.validated_data["password"],
+        )
+
+        if not user:
+            return Response(
+                {"detail": "invalid credentials"}, status.HTTP_403_FORBIDDEN
+            )
+
+        user_obj = User.objects.get(username=user.username)
+        otp = random.randint(1000, 9999)
+        user_obj.otp = otp
+        ipdb.set_trace()
+        # serializer_user = UserSerializer(data=user_obj})
+        user_obj.save()
+
+        # serializer_user.is_valid(raise_exception=True)
+        # serializer_user.save()
+
+        send_otp_mail(email=user_obj.email, otp=otp)
+        return Response(
+            {"Use PIN sender mail for confirmation your access!"},
+            status=status.HTTP_307_TEMPORARY_REDIRECT,
+        )
+        refresh = RefreshToken.for_user(user)
+
+        token = {"refresh": str(refresh), "access": str(refresh.access_token)}
+
+        return Response(token)
 
 
 class RegisterUserView(generics.CreateAPIView):
@@ -63,9 +103,10 @@ class ActivateUser(APIView):
             if req.data["is_email_verified"]:
                 users_obj.is_email_verified = req.data["is_email_verified"]
 
-                serializer = UserSerializer(users_obj)
-                
-                message = {"Your account is valid!"}
+                serializer = UserSerializer(data=users_obj)
+                serializer.is_valid(raise_exception=True)
+
+                message = dict(message="Your account is valid!")
 
                 return Response(data=message, status=status.HTTP_200_OK)
 
@@ -76,6 +117,37 @@ class ActivateUser(APIView):
             return Response(
                 data={"Invalid Email token"}, status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class AccessLoginView(APIView):
+    def post(
+        self,
+        req: Request,
+    ) -> Response:
+        try:
+
+            if req.data["pin"]:
+                # users_obj.is_email_verified = req.data["is_email_verified"]
+                users_obj = User.objects.get(otp=req.data["pin"])
+
+                serializer = UserSerializer(users_obj)
+
+                message = dict(message="Your access is valid!")
+
+                refresh = RefreshToken.for_user(users_obj)
+
+                token = {"message":message, "refresh": str(refresh), "access": str(refresh.access_token)}
+
+                return Response(
+                    data=token, status=status.HTTP_200_OK
+                )
+
+            raise BadRequest("Invalid PIN")
+
+        except User.DoesNotExist:
+            message = dict(message="Invalid PIN")
+            
+            return Response(data=message, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -114,7 +186,7 @@ class RestoreUsersView(APIView):
             if users_obj.is_deleted:
                 users_obj.restore()
 
-                serializer = UserSerializer(users_obj)
+                serializer = UserSerializer(data=users_obj)
 
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
