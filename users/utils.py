@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.mail import send_mail
 import random
+import ipdb
 # from .models import User
 
 def send_account_activation_email(email, email_token):
@@ -13,6 +14,7 @@ def send_account_activation_email(email, email_token):
             email,
         ]
         send_mail(subject, message, email_from, recipient_list)
+        # ipdb.set_trace()
         print(email_from)
     except Exception as error:
         return False

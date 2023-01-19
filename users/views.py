@@ -1,4 +1,3 @@
-import datetime
 from .models import User
 from .serializers import UserSerializer, LoginSerializer
 from rest_framework import generics
@@ -15,9 +14,6 @@ from .permissions import (
     IsUserOwnerAuthentication,
     IsListUserAuthorizationAdm,
 )
-from django.http import JsonResponse
-from django.contrib import messages
-from rest_framework.exceptions import ErrorDetail
 from .utils import send_otp_mail
 import random
 import ipdb
@@ -41,23 +37,14 @@ class LoginView(APIView):
         user_obj = User.objects.get(username=user.username)
         otp = random.randint(1000, 9999)
         user_obj.otp = otp
-        ipdb.set_trace()
-        # serializer_user = UserSerializer(data=user_obj})
-        user_obj.save()
 
-        # serializer_user.is_valid(raise_exception=True)
-        # serializer_user.save()
+        user_obj.save()
 
         send_otp_mail(email=user_obj.email, otp=otp)
         return Response(
             {"Use PIN sender mail for confirmation your access!"},
             status=status.HTTP_307_TEMPORARY_REDIRECT,
         )
-        refresh = RefreshToken.for_user(user)
-
-        token = {"refresh": str(refresh), "access": str(refresh.access_token)}
-
-        return Response(token)
 
 
 class RegisterUserView(generics.CreateAPIView):
@@ -67,20 +54,17 @@ class RegisterUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
     queryset = User.global_objects.all()
 
+    def perform_create(self, serializer):
+        serializer.save(is_active=False)
+        data = {
+            "message": "User created successfully. An email has been sent for your confirmation.",
+        }
+        return Response(data=data, status=status.HTTP_201_CREATED)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-
-        data = dict(
-            message="An email has been sent on your mail.",
-        )
-
-        return Response(
-            data=data, status=status.HTTP_307_TEMPORARY_REDIRECT, headers=headers
-        )
+        return self.perform_create(serializer)
 
 
 class ListUserView(generics.ListAPIView):
@@ -95,29 +79,23 @@ class ListUserView(generics.ListAPIView):
         return self.queryset.all()
 
 
-class ActivateUser(APIView):
-    def post(self, req: Request, email_token: str) -> Response:
-        try:
-            users_obj = User.objects.get(email_token=email_token)
+class ActivateUser(generics.UpdateAPIView):
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [IsListUserAuthorizationAdm]
 
-            if req.data["is_email_verified"]:
-                users_obj.is_email_verified = req.data["is_email_verified"]
+    serializer_class = UserSerializer
+    queryset = User.global_objects.all()
 
-                serializer = UserSerializer(data=users_obj)
-                serializer.is_valid(raise_exception=True)
+    def get_object(self):
+        email_token = self.kwargs["email_token"]
+        return get_object_or_404(User, email_token=email_token)
 
-                message = dict(message="Your account is valid!")
-
-                return Response(data=message, status=status.HTTP_200_OK)
-
-            raise ErrorDetail
-
-        except Exception as error:
-
-            return Response(
-                data={"Invalid Email token"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
+    def perform_update(self, serializer):
+        email_token = self.kwargs["email_token"]
+        user = get_object_or_404(User, email_token=email_token)
+        serializer.save(is_active=True)
+        data = {"message": "User activated successfully.", "user": user.id}
+        return Response(data=data, status=status.HTTP_200_OK)
 
 class AccessLoginView(APIView):
     def post(
@@ -125,28 +103,28 @@ class AccessLoginView(APIView):
         req: Request,
     ) -> Response:
         try:
+            if not req.data["pin"]:
+                raise KeyError("Invalid PIN")
 
-            if req.data["pin"]:
-                # users_obj.is_email_verified = req.data["is_email_verified"]
-                users_obj = User.objects.get(otp=req.data["pin"])
+            users_obj = get_object_or_404(User,otp=req.data["pin"])
 
-                serializer = UserSerializer(users_obj)
+            UserSerializer(users_obj)
 
-                message = dict(message="Your access is valid!")
+            message = dict(message="Your access is valid!")
 
-                refresh = RefreshToken.for_user(users_obj)
+            refresh = RefreshToken.for_user(users_obj)
 
-                token = {"message":message, "refresh": str(refresh), "access": str(refresh.access_token)}
+            token = {
+                "message": "Your access is valid!",
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
 
-                return Response(
-                    data=token, status=status.HTTP_200_OK
-                )
-
-            raise BadRequest("Invalid PIN")
+            return Response(data=token, status=status.HTTP_200_OK)
 
         except User.DoesNotExist:
             message = dict(message="Invalid PIN")
-            
+
             return Response(data=message, status=status.HTTP_400_BAD_REQUEST)
 
 
