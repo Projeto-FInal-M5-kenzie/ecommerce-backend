@@ -2,7 +2,6 @@ from rest_framework import serializers
 from .models import Address
 from sellers.serializers import SellerSerializer
 from users.serializers import UserSerializer
-import ipdb
 
 
 class AddressSellerSerializer(serializers.ModelSerializer):

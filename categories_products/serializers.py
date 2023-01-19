@@ -2,7 +2,6 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import Category_product
 from products.serializers import ProductSerializer
-import ipdb
 
 # from django_softdelete.models import
 

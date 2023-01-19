@@ -27,7 +27,6 @@ from users.permissions import (
 
 from products.models import Product
 
-import ipdb
 
 
 class RegisterSellerView(generics.CreateAPIView):

@@ -6,7 +6,10 @@ import dotenv
 import json
 import pyqrcode
 from utils.credentials import credentials
-import ipdb
+from PIL import Image
+from django.http import HttpResponse, HttpResponseNotFound
+
+
 # from PIL import Image
 from gerencianet import Gerencianet
 from utils.credentials import credentials
@@ -43,18 +46,17 @@ class Payment(models.Model):
 class PixModel:
     def __init__(self):
         self.headers = {
-            "Authorization": f'Bearer {self.get_token()}',
-            'Content-Type': 'application/json'
+            "Authorization": f"Bearer {self.get_token()}",
+            "Content-Type": "application/json",
         }
         self.url = os.getenv("URL_PRODUCTION")  # Para ambiente de Desenvolvimento
-        self.certificate = credentials.CREDENTIALS["certificate"] 
-
+        self.certificate = credentials.CREDENTIALS["certificate"]
 
     def get_token(
         self,
     ):
         url = os.getenv("URL_PRODUCTION")  # Para ambiente de Desenvolvimento
-        certificate = credentials.CREDENTIALS["certificate"] 
+        certificate = credentials.CREDENTIALS["certificate"]
 
         credentials_user = {
             "client_id": credentials.CREDENTIALS["client_id"],
@@ -69,10 +71,13 @@ class PixModel:
 
         headers = {"Authorization": f"Basic {auth}", "Content-Type": "application/json"}
         payload = {"grant_type": "client_credentials"}
-        # ipdb.set_trace()
 
         response = requests.request(
-            "POST", f'{url}/oauth/token', headers=headers, data=json.dumps(payload), cert=certificate
+            "POST",
+            f"{url}/oauth/token",
+            headers=headers,
+            data=json.dumps(payload),
+            cert=certificate,
         )
 
         return json.loads(response.content)["access_token"]
@@ -80,60 +85,75 @@ class PixModel:
     def create_qrcode(self, location_id):
         url = os.getenv("URL_PRODUCTION")  # Para ambiente de Desenvolvimento
 
-        certificate = credentials.CREDENTIALS["certificate"] 
-        response = requests.get(f'{url}/v2/loc/{location_id}/qrcode', headers=self.headers, cert=certificate)
+        certificate = credentials.CREDENTIALS["certificate"]
+        response = requests.get(
+            f"{url}/v2/loc/{location_id}/qrcode", headers=self.headers, cert=certificate
+        )
 
         return json.loads(response.content)
 
-    
     def create_order(self, txid, payload):
         gn = Gerencianet(credentials.CREDENTIALS)
         url = os.getenv("URL_PRODUCTION")  # Para ambiente de Desenvolvimento
 
-        certificate = credentials.CREDENTIALS["certificate"] 
-       
+        certificate = credentials.CREDENTIALS["certificate"]
+
         headers = {
-            "Authorization": f'Bearer {self.get_token()}',
-            'Content-Type': 'application/json'
+            "Authorization": f"Bearer {self.get_token()}",
+            "Content-Type": "application/json",
         }
-        ipdb.set_trace()
-        response = requests.put(f'{url}/v2/cob/{txid}', data=json.dumps(payload), headers=headers, cert=certificate)
-        # response =  gn.pix_create_charge(params=txid,body=payload)
+        # response = requests.put(
+        #     f"{url}/v2/cob/{txid['txid']}",
+        #     data=json.dumps(payload),
+        #     headers=headers,
+        #     cert=certificate,
+        # )
+        response = gn.pix_create_immediate_charge(body=payload)
 
-        if response.status_code == 201:
-            return json.loads(response.content)
-        
-        return json.loads(response.content)
+        params = {"id": response["loc"]["id"]}
 
-    
+        if response["calendario"]["criacao"]:
+
+            # print(json.load/s(response))
+            return response
+
+        return params
+
     def qrcode_generator(self, location_id):
-        # qrcode = self.create_qrcode(location_id=location_id)
+        qrcode = self.create_qrcode(location_id=location_id)
 
-        # data_qrcode = qrcode['qrcode']
+        data_qrcode = qrcode["qrcode"]
 
-        # url = pyqrcode.QRCode(data_qrcode, error='H')
-        # url.png("qrcode.png", scale=10)
+        url = pyqrcode.QRCode(data_qrcode, error="H")
+        url.png("qrcode.png", scale=10)
 
-        # img = Image.open("qrcode.png")
-        # img = img.convert('RGBA')
-        # img_io = BytesIO()
-        # img.save(img_io, "PNG", quality=100)
-        # img_io.seek(0)
-        gn = Gerencianet(credentials.CREDENTIALS)
+        img = Image.open("qrcode.png")
+        img = img.convert("RGBA")
+        img_io = BytesIO()
+        img.save(img_io, "PNG", quality=100)
+        img_io.seek(0)
+        return img
+        # return HttpResponse(img_io.getvalue(), content_type="image/png")
+        print(response)
+        response["Content-Disposition"] = 'attachment; filename="output.png"'
+        return response
 
-        params = {
-            'id': location_id
-        }
+        # gn = Gerencianet(credentials.CREDENTIALS)
 
-        response =  gn.pix_generate_QRCode(params=params)
+        # params = {"id": location_id}
 
-        if('imagemQrcode' in response):
-            with open("qrCodeImage.png", "wb") as fh:
-                fh.write(base64.b64decode(response['imagemQrcode'].replace('data:image/png;base64,', '')))
+        # response = gn.pix_generate_QRCode(params=params)
+
+        # if "imagemQrcode" in response:
+        #     with open("qrCodeImage.png", "wb") as fh:
+        #         return fh.write(
+        #             base64.b64decode(
+        #                 response["imagemQrcode"].replace("data:image/png;base64,", "")
+        #             )
+        #         )
 
     def create_charge(self, txid, payload):
-        location_id = self.create_order(txid=txid, payload=payload).get('loc').get("id")
+        location_id = self.create_order(txid=txid, payload=payload).get("loc").get("id")
         qrcode = self.qrcode_generator(location_id=location_id)
-
 
         return qrcode

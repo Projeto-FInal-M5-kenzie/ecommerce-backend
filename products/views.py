@@ -14,8 +14,6 @@ from addresses.models import Address
 from categories_products.models import Category_product
 from sellers.models import Seller
 
-import ipdb
-
 
 class RegisterProductView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -30,8 +28,7 @@ class RegisterProductView(generics.CreateAPIView):
         seller_obj = get_object_or_404(Seller, pk=seller_id)
 
         self.check_object_permissions(self.request, seller_obj)
-        # ipdb.set_trace()
-
+        
         serializer.save(**self.request.data, seller=seller_obj)
 
     lookup_url_kwarg = "seller_id"
