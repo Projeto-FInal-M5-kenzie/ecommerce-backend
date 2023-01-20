@@ -6,7 +6,6 @@ from .serializers import OrderSerializer
 from rest_framework.permissions import IsAuthenticated
 from addresses.models import Address
 from django.shortcuts import get_object_or_404
-import ipdb
 
 
 class OrderView(generics.ListAPIView):

@@ -59,16 +59,6 @@ THIRD_PARTY_APPS = [
     "softdelete",
     "drf_spectacular",
     "rest_framework_swagger",
-    "django_registration",
-    "django_otp",
-    "django_otp.plugins.otp_static",
-    "django_otp.plugins.otp_totp",
-    "django_otp.plugins.otp_email",
-    "two_factor",
-    "two_factor.plugins.phonenumber",
-    "two_factor.plugins.email",
-    "two_factor.plugins.yubikey",
-    "otp_yubikey",
 ]
 
 MY_APPS = [
@@ -90,7 +80,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django_otp.middleware.OTPMiddleware",
+    # "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -173,17 +163,10 @@ EMAIL_HOST_USER = env("EMAIL_HOST_USER1")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD1")
 
 
-LOGIN_URL = "two_factor:login"
-# LOGIN_REDIRECT_URL = "two_factor:login"
+# LOGIN_URL = "two_factor:login"
+LOGIN_REDIRECT_URL = "/api/products/"
 # this one is optional
-LOGOUT_REDIRECT_URL = "two_factor:profile"
-
-TWO_FACTOR_PATCH_ADMIN = True
-# ACCOUNT_ACTIVATION_DAYS = 7
-
-# AXES_LOCK_OUT_AT_FAILURE = True
-# AXES_FAILURE_LIMIT = 5
-# AXES_LOCKOUT_CALLABLE = "users.views.lockout"
+# LOGOUT_REDIRECT_URL = "t"
 
 
 # Password validation

@@ -1,7 +1,6 @@
 from gerencianet import Gerencianet
 from utils.credentials import credentials
 from utils.token.token_generate import requests, url, headers, payload, certificate
-import ipdb
 response = requests.request("POST",
                         url,
                         headers=headers,
@@ -36,5 +35,5 @@ key = gn.pix_create_evp()
 #                         # data=payload,
 #                         cert=certificate).json()
 # key =  gn.pix_create_immediate_charge(body=body)
-ipdb.set_trace()
-print(key)
+
+# print(key)
