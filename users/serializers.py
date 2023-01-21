@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 import uuid
-import ipdb
 from .models import User
 
 
@@ -70,7 +69,6 @@ class UserSerializer(serializers.ModelSerializer):
             if key == "password":
                 instance.set_password(value)
             else:
-                ipdb.set_trace()
                 setattr(instance, key, value)
 
         instance.save()

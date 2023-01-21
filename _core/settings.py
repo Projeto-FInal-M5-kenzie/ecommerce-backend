@@ -163,11 +163,6 @@ EMAIL_HOST_USER = env("EMAIL_HOST_USER1")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD1")
 
 
-# LOGIN_URL = "two_factor:login"
-LOGIN_REDIRECT_URL = "/api/products/"
-# this one is optional
-# LOGOUT_REDIRECT_URL = "t"
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

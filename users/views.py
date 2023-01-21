@@ -98,10 +98,7 @@ class ActivateUser(generics.UpdateAPIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 class AccessLoginView(APIView):
-    def post(
-        self,
-        req: Request,
-    ) -> Response:
+    def post( self, req: Request) -> Response:
         try:
             if not req.data["pin"]:
                 raise KeyError("Invalid PIN")
