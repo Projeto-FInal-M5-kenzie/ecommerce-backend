@@ -118,7 +118,7 @@ DATABASES = {
         "HOST": os.getenv("HOST"),
         "PORT": os.getenv("PORT"),
     },
-    "db": {
+    "de": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     },
@@ -132,9 +132,9 @@ if DATABASE_URL:
         default=DATABASE_URL, conn_max_age=500, ssl_require=True
     )
     DATABASES["default"].update(db_from_env)
-    DEBUG = False
+    DEBUG = True
 
-if not DEBUG:
+if DEBUG:
 
     # Tell Django to copy statics to the `staticfiles` directory
     # in your application directory on Render.
