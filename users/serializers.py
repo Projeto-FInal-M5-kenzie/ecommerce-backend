@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 import uuid
 from .models import User
+import ipdb
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -24,7 +25,6 @@ class UserSerializer(serializers.ModelSerializer):
             "is_email_verified",
             "email_token",
             "otp",
-            
         ]
         extra_kwargs = {
             "password": {"write_only": True},
@@ -60,8 +60,10 @@ class UserSerializer(serializers.ModelSerializer):
         email_token = uuid.uuid4()
 
         if validated_data["email"] in USERS_ADM:
-            return User.objects.create_superuser(**validated_data, email_token=email_token)
-
+            return User.objects.create_superuser(
+                **validated_data, email_token=email_token
+            )
+        # ipdb.set_trace()
         return User.objects.create_user(**validated_data, email_token=email_token)
 
     def update(self, instance, validated_data):
