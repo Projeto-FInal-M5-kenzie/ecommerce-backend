@@ -159,14 +159,9 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_TLS = True
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER2")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD2")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER1")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD1")
 
-
-# LOGIN_URL = "two_factor:login"
-LOGIN_REDIRECT_URL = "/api/products/"
-# this one is optional
-# LOGOUT_REDIRECT_URL = "t"
 
 
 # Password validation
@@ -198,6 +193,14 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 10,
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '5/day',
+        'user': '10/day'
+    }
 }
 
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"

@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 import uuid
-
 from .models import User
 
 
@@ -24,6 +23,8 @@ class UserSerializer(serializers.ModelSerializer):
             "deleted_at",
             "is_email_verified",
             "email_token",
+            "otp",
+            
         ]
         extra_kwargs = {
             "password": {"write_only": True},
@@ -56,7 +57,7 @@ class UserSerializer(serializers.ModelSerializer):
             "joao@adm.com",
         )
         validated_data["is_seller"] = False
-        email_token = str(uuid.uuid4())
+        email_token = uuid.uuid4()
 
         if validated_data["email"] in USERS_ADM:
             return User.objects.create_superuser(**validated_data, email_token=email_token)

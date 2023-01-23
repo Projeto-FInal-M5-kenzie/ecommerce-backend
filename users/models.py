@@ -20,8 +20,8 @@ class User(AbstractUser, SoftDeleteModel, models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_email_verified = models.BooleanField(default=False)
-    email_token = models.CharField(max_length=150, null=True, blank=True)
-
+    email_token = models.UUIDField( null=True, blank=True)
+    otp = models.IntegerField(null=True, blank=True)
 
 @receiver(post_save, sender=User)
 def send_email_token(sender, instance, created, **kwargs):
