@@ -22,10 +22,9 @@ def send_account_activation_email(email, email_token):
 
 def send_otp_mail(email, otp):
     try:
-        # user = User.objects.get(username=username)
 
         subject = "Your confirmation login"
-        # otp = random.randint(1000, 9999)
+
         message = f'Your PIN is {otp}'
         email_from = settings.EMAIL_HOST_USER
 
