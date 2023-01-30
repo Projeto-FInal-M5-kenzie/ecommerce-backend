@@ -116,8 +116,9 @@ DATABASES = {
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
         "HOST": os.getenv("HOST"),
-        # "HOST": "e-commerce_db",
-        "PORT": os.getenv("PORT"),
+        "HOST": "e-commerce_db",
+        # "PORT": os.getenv("PORT"),
+        # "PORT": 5447
     },
     "db": {
         "ENGINE": "django.db.backends.sqlite3",
